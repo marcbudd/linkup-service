@@ -1,0 +1,7 @@
+### Post tweet
+POST http://localhost:3000/tweet/post
+Content-Type: application/json
+
+{
+    "content": "This is my tweet content"
+}
