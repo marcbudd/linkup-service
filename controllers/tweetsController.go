@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"sort"
 
 	"github.com/gin-gonic/gin"
 	"github.com/marcbudd/linkup-service/initalizers"
@@ -31,7 +32,7 @@ func PostTweet(c *gin.Context) {
 	}
 
 	// Get user id of logged in user
-	userId := getUserID(c)
+	userId := getCurrentUserId(c)
 	if userId == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid user id",
@@ -58,7 +59,73 @@ func PostTweet(c *gin.Context) {
 
 }
 
-func getUserID(c *gin.Context) uint {
+func DeleteTweet(c *gin.Context) {
+
+	//Get user id of logged in user
+	userId := getCurrentUserId(c)
+	if userId == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{})
+	}
+
+	// Get tweet id from url
+	tweetId := c.Param("tweetId")
+	if tweetId == "0" {
+		c.JSON(http.StatusBadRequest, gin.H{})
+		return
+	}
+
+	// Get tweet
+	var tweet models.Tweet
+	result := initalizers.DB.Where("id = ?", tweetId).First(&tweet)
+
+	if result.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{})
+		return
+	}
+
+	// Check if tweet belongs to user
+	if tweet.UserID != userId {
+		c.JSON(http.StatusForbidden, gin.H{})
+	}
+
+	// Delete tweet
+	result = initalizers.DB.Delete(&tweet)
+
+	if result.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{})
+		return
+	}
+
+	// Respond
+	c.JSON(http.StatusOK, gin.H{})
+}
+
+func GetTweetsByUserId(c *gin.Context) {
+
+	// Get user id from url
+	userId := c.Param("userId")
+	if userId == "0" {
+		c.JSON(http.StatusBadRequest, gin.H{})
+		return
+	}
+
+	// Get tweets
+	var tweets []models.Tweet
+	result := initalizers.DB.Where("user_id = ?", userId).Find(&tweets)
+	sortByCreatedAtDesc(tweets)
+
+	if result.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{})
+		return
+	}
+
+	// Respond
+	c.JSON(http.StatusOK, gin.H{
+		"tweets": tweets,
+	})
+}
+
+func getCurrentUserId(c *gin.Context) uint {
 
 	// Benutzer aus dem Gin-Kontext abrufen
 	userIdRaw, exists := c.Get("userId")
@@ -75,4 +142,11 @@ func getUserID(c *gin.Context) uint {
 
 	return userId
 
+}
+
+// Sort descending by created at attribute
+func sortByCreatedAtDesc(tweets []models.Tweet) {
+	sort.Slice(tweets, func(i, j int) bool {
+		return tweets[i].CreatedAt.After(tweets[j].CreatedAt)
+	})
 }
