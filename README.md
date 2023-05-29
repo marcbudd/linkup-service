@@ -6,7 +6,7 @@ Unser eigenes soziales Netzwerk!
 
 Um das Projekt auszuführen, sind folgende Voraussetzungen erforderlich:
 
-- Go (Version X.X.X): [Installationsanleitung](https://golang.org/doc/install)
+- Go (Version 1.18): [Installationsanleitung](https://golang.org/doc/install)
 - PostgreSQL-Datenbank: [Installationsanleitung](https://www.postgresql.org/download)
 
 ## Konfiguration
