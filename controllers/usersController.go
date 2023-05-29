@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt"
-	"github.com/marcbudd/twitter-clone-backend/initalizers"
-	"github.com/marcbudd/twitter-clone-backend/models"
+	"github.com/marcbudd/linkup-service/initalizers"
+	"github.com/marcbudd/linkup-service/models"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -101,7 +101,7 @@ func Login(c *gin.Context) {
 		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
 	})
 
-	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
+	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -120,9 +120,9 @@ func Login(c *gin.Context) {
 }
 
 func Validate(c *gin.Context) {
-	user, _ := c.Get("user")
+	userId, _ := c.Get("userId")
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": user,
+		"message": userId,
 	})
 }

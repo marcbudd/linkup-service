@@ -1,1 +1,36 @@
+# Go binary
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Go build and test files
+*.test
+*.prof
+
+# Go test cache directory
+/.cache
+
+# Go module dependencies (replace "/project" with your project's module path)
+/project/vendor/
+/go.mod
+/go.sum
+
+# IDE specific files
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs
+/log/
+
+# Compiled output
+/bin/
+
 .env

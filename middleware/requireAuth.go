@@ -8,8 +8,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
-	"github.com/marcbudd/twitter-clone-backend/initalizers"
-	"github.com/marcbudd/twitter-clone-backend/models"
+	"github.com/marcbudd/linkup-service/initalizers"
+	"github.com/marcbudd/linkup-service/models"
 )
 
 func RequireAuth(c *gin.Context) {
@@ -51,7 +51,7 @@ func RequireAuth(c *gin.Context) {
 		}
 
 		// Attach to request
-		c.Set("user", user)
+		c.Set("userId", user.ID)
 
 		// Continue
 		c.Next()
