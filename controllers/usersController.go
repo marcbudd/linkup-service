@@ -13,24 +13,22 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+var tokenExpirationHours = 24 * 30 // token expires after 30 days
+
 func Signup(c *gin.Context) {
 
-	// Get email and password of body
-	var body struct {
-		Email    string
-		Password string
-	}
+	// Get email, username and password of body
+	var userSignupDTO models.UserSignupRequestDTO
 
-	if c.Bind(&body) != nil {
+	if c.Bind(&userSignupDTO) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to read body",
 		})
-
 		return
 	}
 
 	// Hash password
-	hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), 10)
+	hash, err := bcrypt.GenerateFromPassword([]byte(userSignupDTO.Password), 10)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -41,30 +39,31 @@ func Signup(c *gin.Context) {
 	}
 
 	// Create user
-	user := models.User{Email: body.Email, Password: string(hash)}
+	user := models.User{
+		Username:     userSignupDTO.Username,
+		Email:        userSignupDTO.Email,
+		PasswordHash: string(hash),
+	}
 	result := initalizers.DB.Create(&user)
 
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to create user",
 		})
-
 		return
 	}
 
 	// Respond
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusCreated, gin.H{})
 
 }
 
 func Login(c *gin.Context) {
-	// Get email and password of body
-	var body struct {
-		Email    string
-		Password string
-	}
 
-	if c.Bind(&body) != nil {
+	// Get email and password of body
+	var userLoginRequestDTO models.UserLoginRequestDTO
+
+	if c.Bind(&userLoginRequestDTO) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to read body",
 		})
@@ -74,7 +73,7 @@ func Login(c *gin.Context) {
 
 	// Look up requested user
 	var user models.User
-	initalizers.DB.First(&user, "email= ?", body.Email)
+	initalizers.DB.First(&user, "email= ?", userLoginRequestDTO.Email)
 
 	if user.ID == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -85,7 +84,7 @@ func Login(c *gin.Context) {
 	}
 
 	// Compare sent in passqord with saved user password hash
-	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password))
+	err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(userLoginRequestDTO.Password))
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -98,7 +97,7 @@ func Login(c *gin.Context) {
 	// Generate a jwt token
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": user.ID,
-		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
+		"exp": time.Now().Add(time.Hour * time.Duration(tokenExpirationHours)).Unix(),
 	})
 
 	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
@@ -113,7 +112,7 @@ func Login(c *gin.Context) {
 
 	// Respond
 	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
+	c.SetCookie("Authorization", tokenString, 3600*tokenExpirationHours, "", "", false, true)
 
 	c.JSON(http.StatusOK, gin.H{})
 

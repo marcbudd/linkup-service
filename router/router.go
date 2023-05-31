@@ -9,15 +9,17 @@ import (
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
 
-	// User Routes
-	r.POST("/signup", controllers.Signup)
-	r.POST("/login", controllers.Login)
-	r.GET("/validate", middleware.RequireAuth, controllers.Validate)
+	api := r.Group("/api")
 
-	// Tweet Routes
-	r.POST("/tweet/post", middleware.RequireAuth, controllers.PostTweet)
-	r.DELETE("/tweet/delete/:tweetId", middleware.RequireAuth, controllers.DeleteTweet)
-	r.GET("/tweet/getByUser/:userId", controllers.GetTweetsByUserId)
+	// User Routes
+	api.POST("/signup", controllers.Signup)
+	api.POST("/login", controllers.Login)
+	api.GET("/validate", middleware.RequireAuth, controllers.Validate)
+
+	// Post Routes
+	api.POST("/post/post", middleware.RequireAuth, controllers.CreatePost)
+	api.DELETE("/post/delete/:postId", middleware.RequireAuth, controllers.DeletePost)
+	api.GET("/post/byUserId/:userId", controllers.GetPostsByUserId)
 
 	return r
 }

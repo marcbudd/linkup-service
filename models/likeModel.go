@@ -6,6 +6,6 @@ import (
 
 type Like struct {
 	gorm.Model
-	UserId  uint
-	TweetId uint
+	UserID uint
+	PostID uint
 }

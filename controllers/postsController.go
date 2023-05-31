@@ -9,13 +9,11 @@ import (
 	"github.com/marcbudd/linkup-service/models"
 )
 
-func PostTweet(c *gin.Context) {
-	//Get content of tweet from body
-	var body struct {
-		Content string
-	}
+func CreatePost(c *gin.Context) {
+	//Get content of post from body
+	var postCreateRequestDTO models.PostCreateRequestDTO
 
-	if c.Bind(&body) != nil {
+	if c.Bind(&postCreateRequestDTO) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to read body",
 		})
@@ -23,7 +21,7 @@ func PostTweet(c *gin.Context) {
 		return
 	}
 
-	if len(body.Content) > 280 {
+	if len(postCreateRequestDTO.Content) > 280 {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Content is over 280 chars",
 		})
@@ -40,26 +38,26 @@ func PostTweet(c *gin.Context) {
 		return
 	}
 
-	// Create tweet
-	tweet := models.Tweet{Content: body.Content, UserID: userId}
-	result := initalizers.DB.Create(&tweet)
+	// Create post
+	post := models.Post{Content: postCreateRequestDTO.Content, UserID: userId}
+	result := initalizers.DB.Create(&post)
 
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to create tweet",
+			"error": "Failed to create post",
 		})
 		return
 	}
 
 	// Respond
-	c.JSON(http.StatusOK, gin.H{
-		"userId":  tweet.UserID,
-		"content": tweet.Content,
+	c.JSON(http.StatusCreated, gin.H{
+		"userId":  post.UserID,
+		"content": post.Content,
 	})
 
 }
 
-func DeleteTweet(c *gin.Context) {
+func DeletePost(c *gin.Context) {
 
 	//Get user id of logged in user
 	userId := getCurrentUserId(c)
@@ -67,29 +65,29 @@ func DeleteTweet(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{})
 	}
 
-	// Get tweet id from url
-	tweetId := c.Param("tweetId")
-	if tweetId == "0" {
+	// Get post id from url
+	postId := c.Param("postId")
+	if postId == "0" {
 		c.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
 
-	// Get tweet
-	var tweet models.Tweet
-	result := initalizers.DB.Where("id = ?", tweetId).First(&tweet)
+	// Get post
+	var post models.Post
+	result := initalizers.DB.Where("id = ?", postId).First(&post)
 
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
 
-	// Check if tweet belongs to user
-	if tweet.UserID != userId {
+	// Check if post belongs to user
+	if post.UserID != userId {
 		c.JSON(http.StatusForbidden, gin.H{})
 	}
 
-	// Delete tweet
-	result = initalizers.DB.Delete(&tweet)
+	// Delete post
+	result = initalizers.DB.Delete(&post)
 
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{})
@@ -100,7 +98,7 @@ func DeleteTweet(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
-func GetTweetsByUserId(c *gin.Context) {
+func GetPostsByUserId(c *gin.Context) {
 
 	// Get user id from url
 	userId := c.Param("userId")
@@ -109,10 +107,10 @@ func GetTweetsByUserId(c *gin.Context) {
 		return
 	}
 
-	// Get tweets
-	var tweets []models.Tweet
-	result := initalizers.DB.Where("user_id = ?", userId).Find(&tweets)
-	sortByCreatedAtDesc(tweets)
+	// Get posts
+	var posts []models.Post
+	result := initalizers.DB.Where("user_id = ?", userId).Find(&posts)
+	sortByCreatedAtDesc(posts)
 
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{})
@@ -121,7 +119,7 @@ func GetTweetsByUserId(c *gin.Context) {
 
 	// Respond
 	c.JSON(http.StatusOK, gin.H{
-		"tweets": tweets,
+		"posts": posts,
 	})
 }
 
@@ -145,8 +143,8 @@ func getCurrentUserId(c *gin.Context) uint {
 }
 
 // Sort descending by created at attribute
-func sortByCreatedAtDesc(tweets []models.Tweet) {
-	sort.Slice(tweets, func(i, j int) bool {
-		return tweets[i].CreatedAt.After(tweets[j].CreatedAt)
+func sortByCreatedAtDesc(posts []models.Post) {
+	sort.Slice(posts, func(i, j int) bool {
+		return posts[i].CreatedAt.After(posts[j].CreatedAt)
 	})
 }
