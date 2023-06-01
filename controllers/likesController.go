@@ -58,16 +58,16 @@ func DeleteLike(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{})
 	}
 
-	// Get like id from url
-	likeId := c.Param("likeId")
-	if likeId == "0" {
+	// Get post id from url
+	postId := c.Param("postId")
+	if postId == "0" {
 		c.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
 
 	// Get like
 	var like models.Like
-	result := initalizers.DB.Where("id = ?", likeId).First(&like)
+	result := initalizers.DB.Where("userId = ?", userId).Where("postId = ?", postId).First(&like)
 
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{})

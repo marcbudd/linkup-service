@@ -52,7 +52,8 @@ func DeleteFollow(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{})
 	}
 
-	// Get follow id from url
+	//TODO: change here to get follow id from url
+	// Get user id from url
 	followId := c.Param("followId")
 	if followId == "0" {
 		c.JSON(http.StatusBadRequest, gin.H{})
