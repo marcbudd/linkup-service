@@ -16,12 +16,18 @@ Um das Projekt auszuführen, sind folgende Voraussetzungen erforderlich:
 ```shell
 PORT=
 JWT_SECRET=
+
 DB_HOST=
 DB_USER=
 DB_PASSWORD=
 DB_NAME=
 DB_PORT=
 DB_SSLMODE=
+
+EMAIL_HOST=
+EMAIL_PORT=
+EMAIL_ADDRESS=
+EMAIL_PASSWORD=
 ```
 
 Stelle sicher, dass du die PostgreSQL-Datenbank mit den entsprechenden Credentials eingerichtet hast und die Werte in der `.env`-Datei aktualisierst, um eine erfolgreiche Verbindung herzustellen.

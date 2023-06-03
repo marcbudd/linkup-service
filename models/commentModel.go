@@ -8,7 +8,7 @@ type Comment struct {
 	gorm.Model
 	UserID  uint
 	PostID  uint
-	Comment string `json:"comment" gorm:"size:280" validate:"required,max=280"`
+	Comment string `gorm:"size:280" validate:"required,max=280"`
 }
 
 type CommentCreateRequestDTO struct {

@@ -35,5 +35,8 @@ func SetupRouter() *gin.Engine {
 	api.DELETE("comment/:commentId", middleware.RequireAuth, controllers.DeleteComment)
 	api.GET("comment/byPostId/:postId", controllers.GetCommentsByPostId)
 
+	// Test mail route
+	api.GET("/testMail", controllers.SendMail)
+
 	return r
 }
