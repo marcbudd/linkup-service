@@ -30,3 +30,13 @@ func ConnectToDb() {
 	}
 
 }
+
+func CloseDbConnection() {
+	if DB != nil {
+		db, err := DB.DB()
+		if err != nil {
+			panic("Failed to close db connection")
+		}
+		db.Close()
+	}
+}

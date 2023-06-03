@@ -15,5 +15,6 @@ func main() {
 
 	r := router.SetupRouter()
 	r.Run()
+	defer initalizers.CloseDbConnection()
 
 }
