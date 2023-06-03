@@ -12,18 +12,21 @@ func SetupRouter() *gin.Engine {
 	api := r.Group("/api")
 
 	// User Routes
-	api.POST("/signup", controllers.Signup)
-	api.POST("/login", controllers.Login)
-	api.GET("/validate", middleware.RequireAuth, controllers.Validate)
-	api.PATCH("/confirmEmail/:token", middleware.RequireAuth, controllers.ConfirmEmail)
-	api.PATCH("/changePassword", middleware.RequireAuth, controllers.UpdatePassword)
+	api.POST("/user/signup", controllers.Signup)
+	api.POST("/user/login", controllers.Login)
+	api.GET("/user/validate", middleware.RequireAuth, controllers.Validate)
+	api.PATCH("/user/confirmEmail/:token", middleware.RequireAuth, controllers.ConfirmEmail)
+	api.PATCH("/user/changePassword", middleware.RequireAuth, controllers.UpdatePassword)
 	api.GET("/user/:userID", controllers.GetUserByID)
 	api.GET("/user", controllers.GetUsers)
+	api.PATCH("/user", middleware.RequireAuth, controllers.UpdateUser)
+	api.PATCH("/user/forgotPassword", controllers.UpdatePasswordForgotten)
 
 	// Post Routes
 	api.POST("/post", middleware.RequireAuth, controllers.CreatePost)
-	api.DELETE("/post/delete/:postId", middleware.RequireAuth, controllers.DeletePost)
-	api.GET("/post/byUserId/:userId", controllers.GetPostsByUserId)
+	api.DELETE("/post/delete/:postID", middleware.RequireAuth, controllers.DeletePost)
+	api.GET("/post/byUserID/:userID", controllers.GetPostsByUserID)
+	api.GET("/post/byCurrentUser", middleware.RequireAuth, controllers.GetPostsByCurrentUser)
 
 	// Like Routes
 	api.POST("like/:postId", middleware.RequireAuth, controllers.CreateLike)
