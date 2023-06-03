@@ -28,6 +28,8 @@ func SetupRouter() *gin.Engine {
 	api.GET("/post/:postID", controllers.GetPostByID)
 	api.GET("/post/byUserID/:userID", controllers.GetPostsByUserID)
 	api.GET("/post/byCurrentUser", middleware.RequireAuth, controllers.GetPostsByCurrentUser)
+	api.GET("/post/forCurrentUser", middleware.RequireAuth, controllers.GetPostsForCurrentUser)
+	api.GET("/post", controllers.GetPosts)
 
 	// Like Routes
 	api.POST("like/:postID", middleware.RequireAuth, controllers.CreateLike)
@@ -41,9 +43,13 @@ func SetupRouter() *gin.Engine {
 	api.GET("follow/followersOfUserID/:userID", controllers.GetFollowersOfUserID)
 
 	// Comment Routes
-	api.POST("comment/:postId", middleware.RequireAuth, controllers.CreateComment)
-	api.DELETE("comment/:commentId", middleware.RequireAuth, controllers.DeleteComment)
-	api.GET("comment/byPostId/:postId", controllers.GetCommentsByPostId)
+	api.POST("comment/:postID", middleware.RequireAuth, controllers.CreateComment)
+	api.DELETE("comment/:commentID", middleware.RequireAuth, controllers.DeleteComment)
+	api.GET("comment/byPostId/:postID", controllers.GetCommentsByPostId)
+
+	// Message Routes
+	api.POST("message/:receiverID", middleware.RequireAuth, controllers.CreateMessage)
+	api.GET("message/:receiverID", middleware.RequireAuth, controllers.GetMessagesByChat)
 
 	return r
 }

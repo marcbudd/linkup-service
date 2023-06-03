@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"gorm.io/gorm"
 )
 
@@ -15,4 +17,11 @@ type Comment struct {
 type CommentCreateRequestDTO struct {
 	PostID  uint   `json:"postId" validate:"required"`
 	Comment string `json:"comment" validate:"required,max=280"`
+}
+
+type CommentGetResponseDTO struct {
+	ID        uint               `json:"id"`
+	CreatedAt time.Time          `json:"createdAt"`
+	User      UserGetResponseDTO `json:"user"`
+	Comment   string             `json:"comment"`
 }

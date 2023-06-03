@@ -1,82 +1,75 @@
 package controllers
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
+	"github.com/marcbudd/linkup-service/models"
+	"github.com/marcbudd/linkup-service/services"
 )
 
 func CreateMessage(c *gin.Context) {
 
-	// 	// Get content from body
-	// 	var messageCreateRequestDTO models.MessageCreateRequestDTO
+	// Read body
+	var messageCreateRequestDTO models.MessageCreateRequestDTO
+	if c.Bind(&messageCreateRequestDTO) != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "failed to read body",
+		})
+		return
+	}
 
-	// 	if c.Bind(&messageCreateRequestDTO) != nil {
-	// 		c.JSON(http.StatusBadRequest, gin.H{
-	// 			"error": "Failed to read body",
-	// 		})
-	// 	}
+	// Get user id of logged in user
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Not authorized",
+		})
+		return
+	}
 
-	// 	// Get user id of logged in user
-	// 	userId := getCurrentUserId(c)
-	// 	if userId == 0 {
-	// 		c.JSON(http.StatusBadRequest, gin.H{
-	// 			"error": "Invalid user id",
-	// 		})
-	// 	}
+	// Create message
+	err := services.CreateMessage(userID.(uint), messageCreateRequestDTO)
 
-	// 	// Create message
-	// 	message := models.Message{
-	// 		SenderID: userId,
-	// 		ReceiverID: messageCreateRequestDTO.ReceiverID,
-	// 		Text: messageCreateRequestDTO.Text,
-	// 	}
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 
-	// 	result := initalizers.DB.Create(&message)
+	// Respond
+	c.JSON(http.StatusCreated, gin.H{})
+}
 
-	// 	if result.Error != nil {
-	// 		c.JSON(http.StatusBadRequest, gin.H{
-	// 			"error": "Failed to create message",
-	// 		})
-	// 	}
+func GetMessagesByChat(c *gin.Context) {
 
-	// 	// Respond
-	// 	c.JSON(http.StatusCreated, gin.H{
-	// 		message: message,
-	// 	})
+	// Get user id of logged in user
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Not authorized",
+		})
+		return
+	}
 
-	// }
+	// Get post id from url
+	chatPartnerID := c.Param("chatPartnerID")
+	if chatPartnerID == "0" {
+		c.JSON(http.StatusBadRequest, gin.H{})
+		return
+	}
 
-	// func GetMessages(c *gin.Context) {
+	// Get messages
+	messages, err := services.GetMessagesByChat(userID.(uint), chatPartnerID)
 
-	// 	// Get user id of param
-	// 	userId := c.Param("userId")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 
-	// 	// Get messages
-	// 	var messagesReceived []models.Message
-	// 	result := initalizers.DB.Where("receiver_id = ?", userId).Find(&messages)
-
-	// 	if result.Error != nil {
-	// 		c.JSON(http.StatusBadRequest, gin.H{
-	// 			"error": "Failed to get messages",
-	// 		})
-	// 	}
-
-	// 	var messagesSent []models.Message
-	// 	result := initalizers.DB.Where("sender_id = ?", userId).Find(&messages)
-
-	// 	if result.Error != nil {
-	// 		c.JSON(http.StatusBadRequest, gin.H{
-	// 			"error": "Failed to get messages",
-	// 		})
-	// 	}
-
-	// 	var combinedMessages []models.Message
-	// 	combinedMessages = append(messagesReceived, messagesSent)
-	// 	combinedMessagesSorted = append(combinedMessages, func(i, j int) bool {
-	// 		return combinedMessages[i].CreatedAt.Before(combinedMessages[j].CreatedAt)
-	// 	})
-
-	// 	// Respond
-	// 	c.JSON(http.StatusOK, gin.H{
-	// 		"messages": combinedMessagesSorted,
-	// 	})
+	// Respond
+	c.JSON(http.StatusOK, messages)
 }

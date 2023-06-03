@@ -82,7 +82,7 @@ func GetPostsByUserID(userID string, limit int, page int) ([]*models.PostGetResp
 	for _, post := range posts {
 		dto := models.PostGetResponseDTO{
 			ID:        post.ID,
-			CreatedAt: post.CreatedAt.String(),
+			CreatedAt: post.CreatedAt,
 			User: models.UserGetResponseDTO{
 				ID:        post.User.ID,
 				Username:  post.User.Username,
@@ -112,7 +112,7 @@ func GetPostByID(postID string) (*models.PostGetResponseDTO, error) {
 	// Create response dto
 	responsePost := models.PostGetResponseDTO{
 		ID:        post.ID,
-		CreatedAt: post.CreatedAt.String(),
+		CreatedAt: post.CreatedAt,
 		User: models.UserGetResponseDTO{
 			ID:        post.User.ID,
 			Username:  post.User.Username,
@@ -125,6 +125,103 @@ func GetPostByID(postID string) (*models.PostGetResponseDTO, error) {
 	}
 
 	return &responsePost, nil
+}
+
+func GetPostsForCurrentUser(userID string, limit int, page int) ([]*models.PostGetResponseDTO, error) {
+	// Set default values: Pagination
+	if page <= 0 {
+		page = 1
+	}
+	if limit <= 0 {
+		limit = 10
+	}
+
+	offset := (page - 1) * limit
+
+	// Get posts where user is following
+	db := initalizers.DB
+	var posts []models.Post
+
+	result := db.
+		Joins("JOIN follows ON follows.user_followed_id = posts.user_id").
+		Where("follows.user_following_id = ?", userID).
+		Offset(offset).
+		Limit(limit).
+		Find(&posts)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	// Sort by created at desc
+	sortByCreatedAtDesc(posts)
+
+	var dtos []*models.PostGetResponseDTO
+	for _, post := range posts {
+		dto := models.PostGetResponseDTO{
+			ID:        post.ID,
+			CreatedAt: post.CreatedAt,
+			User: models.UserGetResponseDTO{
+				ID:        post.User.ID,
+				Username:  post.User.Username,
+				BirthDate: post.User.BirthDate,
+				Name:      post.User.Name,
+				Bio:       post.User.Bio,
+				Image:     post.User.Image,
+			},
+			Content: post.Content,
+		}
+		dtos = append(dtos, &dto)
+	}
+
+	return dtos, nil
+
+}
+
+func GetAllPosts(limit int, page int) ([]*models.PostGetResponseDTO, error) {
+	// Set default values: Pagination
+	if page <= 0 {
+		page = 1
+	}
+	if limit <= 0 {
+		limit = 10
+	}
+
+	offset := (page - 1) * limit
+
+	// Get posts where user is following
+	db := initalizers.DB
+	var posts []models.Post
+
+	result := db.Offset(offset).Limit(limit).Find(&posts)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	// Sort by created at desc
+	sortByCreatedAtDesc(posts)
+
+	var dtos []*models.PostGetResponseDTO
+	for _, post := range posts {
+		dto := models.PostGetResponseDTO{
+			ID:        post.ID,
+			CreatedAt: post.CreatedAt,
+			User: models.UserGetResponseDTO{
+				ID:        post.User.ID,
+				Username:  post.User.Username,
+				BirthDate: post.User.BirthDate,
+				Name:      post.User.Name,
+				Bio:       post.User.Bio,
+				Image:     post.User.Image,
+			},
+			Content: post.Content,
+		}
+		dtos = append(dtos, &dto)
+	}
+
+	return dtos, nil
+
 }
 
 // Sort descending by created at attribute

@@ -2,30 +2,20 @@ package controllers
 
 import (
 	"net/http"
-	"sort"
 
 	"github.com/gin-gonic/gin"
-	"github.com/marcbudd/linkup-service/initalizers"
 	"github.com/marcbudd/linkup-service/models"
+	"github.com/marcbudd/linkup-service/services"
 )
 
 func CreateComment(c *gin.Context) {
-	//Get content of post from body
-	var commentCreateRequestDTO models.CommentCreateRequestDTO
 
+	//Read body
+	var commentCreateRequestDTO models.CommentCreateRequestDTO
 	if c.Bind(&commentCreateRequestDTO) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to read body",
 		})
-
-		return
-	}
-
-	if len(commentCreateRequestDTO.Comment) > 280 {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Content is over 280 chars",
-		})
-
 		return
 	}
 
@@ -39,25 +29,17 @@ func CreateComment(c *gin.Context) {
 	}
 
 	// Create comment
-	comment := models.Comment{
-		UserID:  userID.(uint),
-		PostID:  commentCreateRequestDTO.PostID,
-		Comment: commentCreateRequestDTO.Comment,
-	}
-	result := initalizers.DB.Create(&comment)
+	err := services.CreateComment(userID.(uint), commentCreateRequestDTO)
 
-	if result.Error != nil {
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to create comment",
+			"error": err.Error(),
 		})
 		return
 	}
 
 	// Respond
-	c.JSON(http.StatusCreated, gin.H{
-		"userId":  comment.UserID,
-		"content": comment.Comment,
-	})
+	c.JSON(http.StatusCreated, gin.H{})
 
 }
 
@@ -73,30 +55,16 @@ func DeleteComment(c *gin.Context) {
 	}
 
 	// Get comment id from url
-	commentId := c.Param("commentId")
-	if commentId == "0" {
+	commentID := c.Param("commentID")
+	if commentID == "0" {
 		c.JSON(http.StatusBadRequest, gin.H{})
 		return
-	}
-
-	// Get comment
-	var comment models.Comment
-	result := initalizers.DB.Where("id = ?", commentId).First(&comment)
-
-	if result.Error != nil {
-		c.JSON(http.StatusBadRequest, gin.H{})
-		return
-	}
-
-	// Check if comment belongs to user
-	if comment.UserID != userID {
-		c.JSON(http.StatusForbidden, gin.H{})
 	}
 
 	// Delete comment
-	result = initalizers.DB.Delete(&comment)
+	err := services.DeleteComment(userID.(uint), commentID)
 
-	if result.Error != nil {
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
@@ -108,27 +76,21 @@ func DeleteComment(c *gin.Context) {
 func GetCommentsByPostId(c *gin.Context) {
 
 	// Get post id from url
-	var postId = c.Param("postId")
-	if postId == "0" {
+	var postID = c.Param("postID")
+	if postID == "0" {
 		c.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
 
-	var comments []models.Comment
-	result := initalizers.DB.Where("post_id = ?", postId).Find(&comments)
+	comments, err := services.GetCommentsByPostID(postID)
 
-	if result.Error != nil {
-		c.JSON(http.StatusBadRequest, gin.H{})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
 		return
 	}
-
-	// Sort comments by date
-	sort.Slice(comments, func(i, j int) bool {
-		return comments[i].CreatedAt.Before(comments[j].CreatedAt)
-	})
 
 	//Respond
-	c.JSON(http.StatusOK, gin.H{
-		"comments": comments,
-	})
+	c.JSON(http.StatusOK, comments)
 }

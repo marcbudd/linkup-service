@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"gorm.io/gorm"
 )
 
@@ -17,7 +19,7 @@ type PostCreateRequestDTO struct {
 
 type PostGetResponseDTO struct {
 	ID        uint               `json:"id"`
-	CreatedAt string             `json:"createdAt"`
+	CreatedAt time.Time          `json:"createdAt"`
 	User      UserGetResponseDTO `json:"user"`
 	Content   string             `json:"content"`
 }
