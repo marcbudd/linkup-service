@@ -43,3 +43,15 @@ type UserGetResponseDTO struct {
 	Bio       string    `json:"bio"`
 	Image     *string   `json:"image"`
 }
+
+type UserUpdateRequestDTO struct {
+	Username  string    `json:"username"`
+	BirthDate time.Time `json:"birthDate"`
+	Name      string    `json:"name"`
+	Bio       string    `json:"bio"`
+	Image     *string   `json:"image"`
+}
+
+type UserUpdatePasswordForgottenRequestDTO struct {
+	Email string `json:"email"`
+}

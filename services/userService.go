@@ -98,6 +98,7 @@ func ConfirmEmail(userID uint, tokenString string) error {
 	ConfirmToken(token)
 	user.EmailConfirmed = true
 	db.Save(&user)
+	SendConfirmedEmail(user.Email)
 
 	return nil
 
@@ -173,4 +174,46 @@ func GetUsers(query string, page int, limit int) (*[]models.UserGetResponseDTO, 
 	offset := (page - 1) * limit
 	err := dbQuery.Offset(offset).Limit(limit).Find(&users).Error
 	return &users, err
+}
+
+func UpdateUser(userID uint, req models.UserUpdateRequestDTO) error {
+	// Find user by id
+	db := initalizers.DB
+	var user models.User
+	db.Where("id = ?", userID).First(&user)
+
+	// Update user
+	user.Username = req.Username
+	user.BirthDate = req.BirthDate
+	user.Name = req.Bio
+	user.Bio = req.Bio
+	user.Image = req.Image
+
+	err := db.Save(&user).Error
+
+	return err
+
+}
+
+func UpdatePasswordForgotten(req models.UserUpdatePasswordForgottenRequestDTO) error {
+	db := initalizers.DB
+	var user models.User
+	result := db.Where("email = ?", req.Email).First(&user)
+
+	if result.Error != nil {
+		return errors.New("user not found")
+	}
+
+	randomPassword, _ := utils.GenerateTokenString(20)
+	passwordHashed, err := utils.HashPassword(randomPassword)
+	if err != nil {
+		return errors.New("failed to hash password")
+	}
+
+	user.PasswordHash = passwordHashed
+	db.Save(&user)
+	SendPasswordForgottenMail(user.Email, randomPassword)
+
+	return nil
+
 }

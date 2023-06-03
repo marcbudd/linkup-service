@@ -204,9 +204,65 @@ func GetUsers(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
+		return
 	}
 
 	// Respond
 	c.JSON(http.StatusOK, users)
+
+}
+
+func UpdateUser(c *gin.Context) {
+	// Read body
+	var updateUpdateDTO models.UserUpdateRequestDTO
+
+	if c.Bind(&updateUpdateDTO) != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed to read body",
+		})
+		return
+	}
+
+	// Get user id of logged in user
+	userID, exists := c.Get("userID")
+
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Not authorized",
+		})
+		return
+	}
+
+	// Update user
+	err := services.UpdateUser(userID.(uint), updateUpdateDTO)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	// Respond
+	c.JSON(http.StatusOK, gin.H{})
+}
+
+func UpdatePasswordForgotten(c *gin.Context) {
+	// Read body
+	var updatePasswordForgottenDTO models.UserUpdatePasswordForgottenRequestDTO
+
+	if c.Bind(&updatePasswordForgottenDTO) != nil {
+		c.JSON(http.StatusBadRequest, gin.H{})
+		return
+	}
+
+	// Reset password
+	err := services.UpdatePasswordForgotten(updatePasswordForgottenDTO)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{})
+		return
+	}
+
+	// Respond
+	c.JSON(http.StatusOK, gin.H{})
 
 }
