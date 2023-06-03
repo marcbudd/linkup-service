@@ -22,18 +22,18 @@ func CreateLike(c *gin.Context) {
 	}
 	postId := uint(postIdRaw)
 
-	// Get id of logged in user
-	userId := getCurrentUserId(c)
-	if userId == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid user id",
+	// Get user id of logged in user
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Not authorized",
 		})
 		return
 	}
 
 	// Create like
 	like := models.Like{
-		UserID: userId,
+		UserID: userID.(uint),
 		PostID: postId,
 	}
 	result := initalizers.DB.Create(&like)
@@ -52,10 +52,13 @@ func CreateLike(c *gin.Context) {
 
 func DeleteLike(c *gin.Context) {
 
-	//Get user id of logged in user
-	userId := getCurrentUserId(c)
-	if userId == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{})
+	// Get user id of logged in user
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Not authorized",
+		})
+		return
 	}
 
 	// Get post id from url
@@ -67,7 +70,7 @@ func DeleteLike(c *gin.Context) {
 
 	// Get like
 	var like models.Like
-	result := initalizers.DB.Where("userId = ?", userId).Where("postId = ?", postId).First(&like)
+	result := initalizers.DB.Where("userId = ?", userID).Where("postId = ?", postId).First(&like)
 
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{})
@@ -75,7 +78,7 @@ func DeleteLike(c *gin.Context) {
 	}
 
 	// Check if like belongs to user
-	if like.UserID != userId {
+	if like.UserID != userID {
 		c.JSON(http.StatusForbidden, gin.H{})
 	}
 

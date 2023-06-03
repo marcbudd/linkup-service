@@ -19,16 +19,19 @@ func CreateFollow(c *gin.Context) {
 		return
 	}
 
-	//Get user id of logged in user
-	userId := getCurrentUserId(c)
-	if userId == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{})
+	// Get user id of logged in user
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Not authorized",
+		})
+		return
 	}
 
 	// Create follow
 	follow := models.Follow{
 		FollowingID:  followCreateRequestDTO.UserID,
-		FollowedByID: userId,
+		FollowedByID: userID.(uint),
 	}
 	result := initalizers.DB.Create(&follow)
 
@@ -46,10 +49,13 @@ func CreateFollow(c *gin.Context) {
 
 func DeleteFollow(c *gin.Context) {
 
-	//Get user id of logged in user
-	userId := getCurrentUserId(c)
-	if userId == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{})
+	// Get user id of logged in user
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Not authorized",
+		})
+		return
 	}
 
 	//TODO: change here to get follow id from url
@@ -70,7 +76,7 @@ func DeleteFollow(c *gin.Context) {
 	}
 
 	// Check if follow belongs to user
-	if follow.FollowedByID != userId {
+	if follow.FollowedByID != userID {
 		c.JSON(http.StatusForbidden, gin.H{})
 	}
 

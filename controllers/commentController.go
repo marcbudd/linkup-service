@@ -30,17 +30,17 @@ func CreateComment(c *gin.Context) {
 	}
 
 	// Get user id of logged in user
-	userId := getCurrentUserId(c)
-	if userId == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid user id",
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Not authorized",
 		})
 		return
 	}
 
 	// Create comment
 	comment := models.Comment{
-		UserID:  userId,
+		UserID:  userID.(uint),
 		PostID:  commentCreateRequestDTO.PostID,
 		Comment: commentCreateRequestDTO.Comment,
 	}
@@ -63,10 +63,13 @@ func CreateComment(c *gin.Context) {
 
 func DeleteComment(c *gin.Context) {
 
-	//Get user id of logged in user
-	userId := getCurrentUserId(c)
-	if userId == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{})
+	// Get user id of logged in user
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Not authorized",
+		})
+		return
 	}
 
 	// Get comment id from url
@@ -86,7 +89,7 @@ func DeleteComment(c *gin.Context) {
 	}
 
 	// Check if comment belongs to user
-	if comment.UserID != userId {
+	if comment.UserID != userID {
 		c.JSON(http.StatusForbidden, gin.H{})
 	}
 

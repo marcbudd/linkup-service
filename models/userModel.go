@@ -37,6 +37,7 @@ type UsersGetRequestDTO struct {
 }
 
 type UserGetResponseDTO struct {
+	ID        uint      `json:"id"`
 	Username  string    `json:"username"`
 	BirthDate time.Time `json:"birthDate"`
 	Name      string    `json:"name"`

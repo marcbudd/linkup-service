@@ -143,6 +143,7 @@ func GetUserByID(id string) (*models.UserGetResponseDTO, error) {
 	err := db.Where("id = ?", id).First(&user).Error
 
 	var responseUser = models.UserGetResponseDTO{
+		ID:        user.ID,
 		Username:  user.Username,
 		BirthDate: user.BirthDate,
 		Name:      user.Name,
@@ -167,7 +168,7 @@ func GetUsers(query string, page int, limit int) (*[]models.UserGetResponseDTO, 
 	// Database query with optional search parameter
 	query = "%" + query + "%"
 	dbQuery := db.Model(&models.User{}).
-		Select("username, birth_date, name, bio, image").
+		Select("id, username, birth_date, name, bio, image").
 		Where("username LIKE ? OR name LIKE ?", query, query)
 
 	// Perform database query with pagination
