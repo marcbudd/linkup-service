@@ -6,10 +6,10 @@ import (
 
 type Follow struct {
 	gorm.Model
-	UserFollowingID uint `gorm:"not null"`                   // User ID that is following
-	UserFollowing   User `gorm:"foreignKey:UserID;not null"` // User that is following
-	UserFollowedID  uint `gorm:"not null"`                   // User ID that is being followed
-	UserFollowed    User `gorm:"foreignKey:UserID;not null"` // User that is being followed
+	UserFollowingID uint `gorm:"not null"`                            // User ID that is following
+	UserFollowing   User `gorm:"foreignKey:UserFollowingID;not null"` // User that is following
+	UserFollowedID  uint `gorm:"not null"`                            // User ID that is being followed
+	UserFollowed    User `gorm:"foreignKey:UserFollowedID;not null"`  // User that is being followed
 }
 
 type FollowingsOfUserGetResponseDTO struct {

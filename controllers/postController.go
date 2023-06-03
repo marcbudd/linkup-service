@@ -74,7 +74,7 @@ func DeletePost(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
-func GetPostByPostID(c *gin.Context) {
+func GetPostByID(c *gin.Context) {
 
 	// Get post id from url
 	postID := c.Param("postID")
@@ -84,7 +84,7 @@ func GetPostByPostID(c *gin.Context) {
 	}
 
 	// Get post
-	post, err := services.GetPostByPostID(postID)
+	post, err := services.GetPostByID(postID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),

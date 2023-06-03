@@ -4,10 +4,10 @@ import "time"
 
 type User struct {
 	ID             uint      `gorm:"primary_key"`
-	Username       string    `gorm:"column:username"`
-	Email          string    `gorm:"column:email;unique_index"`
+	Username       string    `gorm:"column:username;not null;unique_index"`
+	Email          string    `gorm:"column:email;not null;unique_index"`
 	PasswordHash   string    `gorm:"column:password;not null"`
-	EmailConfirmed bool      `gorm:"column:active;default:false"`
+	EmailConfirmed bool      `gorm:"column:active;default:false;not null"`
 	BirthDate      time.Time `gorm:"column:birth_date"`
 	Name           string    `gorm:"column:name"`
 	Bio            string    `gorm:"column:bio;size:1024"`

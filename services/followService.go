@@ -86,7 +86,7 @@ func GetFollowingsOfUserID(userID string) ([]*models.FollowingsOfUserGetResponse
 }
 
 // Get lists of user that are following user
-func GetFollowerOfUserID(userID string) ([]*models.FollowerOfUserGetResponseDTO, error) {
+func GetFollowersOfUserID(userID string) ([]*models.FollowerOfUserGetResponseDTO, error) {
 
 	// Get follower of a user
 	db := initalizers.DB

@@ -92,7 +92,7 @@ func GetFollowingsOfUserID(c *gin.Context) {
 
 }
 
-func GetFollowerOfUserID(c *gin.Context) {
+func GetFollowersOfUserID(c *gin.Context) {
 
 	// Get user id from url
 	var userID = c.Param("userID")
@@ -102,7 +102,7 @@ func GetFollowerOfUserID(c *gin.Context) {
 	}
 
 	// Get follower of a user
-	followers, err := services.GetFollowerOfUserID(userID)
+	followers, err := services.GetFollowersOfUserID(userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),

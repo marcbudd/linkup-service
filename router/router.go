@@ -25,17 +25,20 @@ func SetupRouter() *gin.Engine {
 	// Post Routes
 	api.POST("/post", middleware.RequireAuth, controllers.CreatePost)
 	api.DELETE("/post/delete/:postID", middleware.RequireAuth, controllers.DeletePost)
+	api.GET("/post/:postID", controllers.GetPostByID)
 	api.GET("/post/byUserID/:userID", controllers.GetPostsByUserID)
 	api.GET("/post/byCurrentUser", middleware.RequireAuth, controllers.GetPostsByCurrentUser)
 
 	// Like Routes
-	api.POST("like/:postId", middleware.RequireAuth, controllers.CreateLike)
-	api.DELETE("like/:postId", middleware.RequireAuth, controllers.DeleteLike) // By Post Id
-	api.GET("like/byPostId/:postId", controllers.GetLikesByPostId)
+	api.POST("like/:postID", middleware.RequireAuth, controllers.CreateLike)
+	api.DELETE("like/:postID", middleware.RequireAuth, controllers.DeleteLike) // By Post Id
+	api.GET("like/byPostId/:postID", controllers.GetLikesByPostId)
 
 	// Follow Routes
-	api.POST("follow/:userId", middleware.RequireAuth, controllers.CreateFollow)
-	// api.DELETE("follow/:userId")
+	api.POST("follow/:followedUserID", middleware.RequireAuth, controllers.CreateFollow)
+	api.DELETE("follow/:followedUserID", middleware.RequireAuth, controllers.DeleteFollow)
+	api.GET("follow/followingsOfUserID/:userID", controllers.GetFollowingsOfUserID)
+	api.GET("follow/followersOfUserID/:userID", controllers.GetFollowersOfUserID)
 
 	// Comment Routes
 	api.POST("comment/:postId", middleware.RequireAuth, controllers.CreateComment)

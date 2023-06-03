@@ -99,7 +99,7 @@ func GetPostsByUserID(userID string, limit int, page int) ([]*models.PostGetResp
 	return dtos, nil
 }
 
-func GetPostByPostID(postID string) (*models.PostGetResponseDTO, error) {
+func GetPostByID(postID string) (*models.PostGetResponseDTO, error) {
 
 	// Get post by id
 	db := initalizers.DB
