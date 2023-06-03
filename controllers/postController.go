@@ -36,6 +36,7 @@ func CreatePost(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})
+		return
 	}
 
 	// Respond
@@ -63,7 +64,9 @@ func DeletePost(c *gin.Context) {
 	// Delete post
 	err := services.DeletePost(userID.(uint), postID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{})
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
 		return
 	}
 
@@ -83,7 +86,9 @@ func GetPostByPostID(c *gin.Context) {
 	// Get post
 	post, err := services.GetPostByPostID(postID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
 		return
 	}
 
@@ -113,9 +118,11 @@ func GetPostsByCurrentUser(c *gin.Context) {
 	}
 
 	// Get posts
-	posts, err := services.GetPostsByUserID(string(userID.(uint)), int(limit), int(page))
+	posts, err := services.GetPostsByUserID(strconv.Itoa(int(userID.(uint))), int(limit), int(page))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
 		return
 	}
 
@@ -145,7 +152,9 @@ func GetPostsByUserID(c *gin.Context) {
 	// Get posts
 	posts, err := services.GetPostsByUserID(userID, int(limit), int(page))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
 		return
 	}
 
