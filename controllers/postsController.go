@@ -126,7 +126,7 @@ func GetPostsByUserId(c *gin.Context) {
 func getCurrentUserId(c *gin.Context) uint {
 
 	// Benutzer aus dem Gin-Kontext abrufen
-	userIdRaw, exists := c.Get("userId")
+	userIdRaw, exists := c.Get("userID")
 	if !exists {
 		// Benutzer nicht gefunden
 		return 0

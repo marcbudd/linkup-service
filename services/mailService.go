@@ -1,28 +1,25 @@
-package controllers
+package services
 
 import (
 	"fmt"
 	"net/smtp"
 	"os"
-
-	"github.com/gin-gonic/gin"
 )
 
-func SendMail(c *gin.Context) {
+func SendTokenMail(receiver string, token string) {
 
 	from := os.Getenv("EMAIL_ADDRESS")
 	password := os.Getenv("EMAIL_PASSWORD")
-
-	receiver := "marcbuddemeier@gmail.com"
-	to := []string{receiver}
-
 	host := os.Getenv("EMAIL_HOST")
 	port := os.Getenv("EMAIL_PORT")
 	address := host + ":" + port
+	link := "http://localhost:3000/confirmEmail/" + token
 
-	subject := "Go Test Mail"
-	body := "This is a test mail"
-	message := []byte(subject + "\n" + body)
+	to := []string{receiver}
+
+	subject := "Subject: Welcome to LinkUp Social Media!\nPlease verify your email address"
+	body := "Please verify your email address using the following link: \n" + link
+	message := []byte(subject + "\n\n" + body)
 
 	auth := smtp.PlainAuth("", from, password, host)
 

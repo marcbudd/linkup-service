@@ -2,105 +2,38 @@ package controllers
 
 import (
 	"net/http"
-	"os"
-	"time"
+	"strconv"
 
-	"github.com/golang-jwt/jwt"
-	"github.com/marcbudd/linkup-service/initalizers"
 	"github.com/marcbudd/linkup-service/models"
+	"github.com/marcbudd/linkup-service/services"
+	"github.com/marcbudd/linkup-service/utils"
 
 	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
 )
-
-var tokenExpirationHours = 24 * 30 // token expires after 30 days
 
 func Signup(c *gin.Context) {
 
-	// Get email, username and password of body
-	var userSignupDTO models.UserSignupRequestDTO
+	// Read body
+	var userCreateDTO models.UserCreateRequestDTO
 
-	if c.Bind(&userSignupDTO) != nil {
+	if c.Bind(&userCreateDTO) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to read body",
+			"error": "failed to read body",
 		})
-		return
-	}
-
-	// Hash password
-	hash, err := bcrypt.GenerateFromPassword([]byte(userSignupDTO.Password), 10)
-
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to hash Password",
-		})
-
 		return
 	}
 
 	// Create user
-	user := models.User{
-		Username:     userSignupDTO.Username,
-		Email:        userSignupDTO.Email,
-		PasswordHash: string(hash),
-	}
-	result := initalizers.DB.Create(&user)
-
-	if result.Error != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to create user",
-		})
-		return
-	}
-
-	// Respond
-	c.JSON(http.StatusCreated, gin.H{})
-
-}
-
-func Login(c *gin.Context) {
-
-	// Get email and password of body
-	var userLoginRequestDTO models.UserLoginRequestDTO
-
-	if c.Bind(&userLoginRequestDTO) != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to read body",
-		})
-
-		return
-	}
-
-	// Look up requested user
-	var user models.User
-	initalizers.DB.First(&user, "email= ?", userLoginRequestDTO.Email)
-
-	if user.ID == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid email or password",
-		})
-
-		return
-	}
-
-	// Compare sent in passqord with saved user password hash
-	err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(userLoginRequestDTO.Password))
-
+	user, err := services.CreateUser(userCreateDTO)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid email or password",
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
 		})
-
 		return
 	}
 
 	// Generate a jwt token
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub": user.ID,
-		"exp": time.Now().Add(time.Hour * time.Duration(tokenExpirationHours)).Unix(),
-	})
-
-	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+	tokenString, err := utils.GenerateJWTToken(user.ID)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -112,16 +45,168 @@ func Login(c *gin.Context) {
 
 	// Respond
 	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie("Authorization", tokenString, 3600*tokenExpirationHours, "", "", false, true)
+	c.SetCookie("Authorization", tokenString, 3600*30*24, "", "", false, true)
+	c.JSON(http.StatusCreated, gin.H{})
 
+}
+
+func Login(c *gin.Context) {
+
+	// Read body
+	var userLoginRequestDTO models.UserLoginRequestDTO
+
+	if c.Bind(&userLoginRequestDTO) != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed to read body",
+		})
+
+		return
+	}
+
+	// Look up requested user
+	user, err := services.LoginUser(userLoginRequestDTO)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+	}
+
+	// Generate a jwt token
+	tokenString, err := utils.GenerateJWTToken(user.ID)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed to create token",
+		})
+
+		return
+	}
+
+	// Respond
+	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetCookie("Authorization", tokenString, 3600*30*24, "", "", false, true)
 	c.JSON(http.StatusOK, gin.H{})
 
 }
 
 func Validate(c *gin.Context) {
-	userId, _ := c.Get("userId")
+	// Get user id of logged in user
+	_, exists := c.Get("userID")
 
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Not authorized",
+		})
+		return
+	}
+
+	// Respond
 	c.JSON(http.StatusOK, gin.H{
-		"message": userId,
+		"message": "validated",
 	})
+}
+
+func ConfirmEmail(c *gin.Context) {
+	// Get user id of logged in user
+	userID, exists := c.Get("userID")
+
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Not authorized",
+		})
+		return
+	}
+
+	// Confirm email
+	err := services.ConfirmEmail(userID.(uint), c.Param("token"))
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	// Respond
+	c.JSON(http.StatusOK, gin.H{})
+
+}
+
+func UpdatePassword(c *gin.Context) {
+
+	// Read body
+	var updatePasswordDTO models.UserUpdatePasswortRequestDTO
+
+	if c.Bind(&updatePasswordDTO) != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed to read body",
+		})
+		return
+	}
+
+	// Get user id of logged in user
+	userID, exists := c.Get("userID")
+
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Not authorized",
+		})
+		return
+	}
+
+	// Update password
+	err := services.UpdatePassword(userID.(uint), updatePasswordDTO)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	// Respond
+	c.JSON(http.StatusOK, gin.H{})
+
+}
+
+func GetUserByID(c *gin.Context) {
+
+	// Get parameter from url
+	userID := c.Param("userID")
+
+	// Get user
+	user, err := services.GetUserByID(userID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	// Respond
+	c.JSON(http.StatusOK, user)
+}
+
+func GetUsers(c *gin.Context) {
+
+	// Get query paramters
+	query := c.Query("query")
+	limit, err := strconv.ParseInt(c.Query("limit"), 10, 64)
+	if err != nil {
+		limit = 0
+	}
+	page, err := strconv.ParseInt(c.Query("page"), 10, 64)
+	if err != nil {
+		page = 0
+	}
+
+	// Get users
+	users, err := services.GetUsers(query, int(limit), int(page))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+	}
+
+	// Respond
+	c.JSON(http.StatusOK, users)
+
 }

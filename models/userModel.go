@@ -1,16 +1,20 @@
 package models
 
-//TODO: Add birth date, name
+import "time"
+
 type User struct {
-	ID           uint    `gorm:"primary_key"`
-	Username     string  `gorm:"column:username"`
-	Email        string  `gorm:"column:email;unique_index"`
-	Bio          string  `gorm:"column:bio;size:1024"`
-	Image        *string `gorm:"column:image"`
-	PasswordHash string  `gorm:"column:password;not null"`
+	ID             uint      `gorm:"primary_key"`
+	Username       string    `gorm:"column:username"`
+	Email          string    `gorm:"column:email;unique_index"`
+	PasswordHash   string    `gorm:"column:password;not null"`
+	EmailConfirmed bool      `gorm:"column:active;default:false"`
+	BirthDate      time.Time `gorm:"column:birth_date"`
+	Name           string    `gorm:"column:name"`
+	Bio            string    `gorm:"column:bio;size:1024"`
+	Image          *string   `gorm:"column:image"`
 }
 
-type UserSignupRequestDTO struct {
+type UserCreateRequestDTO struct {
 	Email    string `json:"email"`
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -21,48 +25,21 @@ type UserLoginRequestDTO struct {
 	Password string `json:"password"`
 }
 
-// func UserAutoMigrate() {
-// 	db := initalizers.DB
+type UserUpdatePasswortRequestDTO struct {
+	OldPassword string `json:"oldPassword"`
+	NewPassword string `json:"newPassword"`
+}
 
-// 	db.AutoMigrate(&User{})
-// }
+type UsersGetRequestDTO struct {
+	Query string `form:"query"`
+	Page  int    `form:"query"`
+	Limit int    `form:"limit"`
+}
 
-// func (u *User) SetPassword(password string) error {
-// 	if len(password) == 0 {
-// 		return errors.New("password cannot be empty")
-// 	}
-// 	bytePassword := []byte(password)
-// 	passwordHash, err := bcrypt.GenerateFromPassword(bytePassword, bcrypt.DefaultCost)
-
-// 	if err != nil {
-// 		return errors.New("failed to hash password")
-// 	}
-
-// 	u.PasswordHash = string(passwordHash)
-// 	return nil
-// }
-
-// func (u *User) CheckPassword(password string) error {
-// 	bytePassword := []byte(password)
-// 	byteHashedPassword := []byte(u.PasswordHash)
-// 	return bcrypt.CompareHashAndPassword(byteHashedPassword, bytePassword)
-// }
-
-// func GetOneUser(condition interface{}) (User, error) {
-// 	db := initalizers.DB
-// 	var user User
-// 	err := db.Where(condition).First(&user).Error
-// 	return user, err
-// }
-
-// func CreateUser(data interface{}) error {
-// 	db := initalizers.DB
-// 	err := db.Save(data).Error
-// 	return err
-// }
-
-// func (model *User) UpdateUser(data interface{}) error {
-// 	db := initalizers.DB
-// 	err := db.Model(model).Updates(data).Error
-// 	return err
-// }
+type UserGetResponseDTO struct {
+	Username  string    `json:"username"`
+	BirthDate time.Time `json:"birthDate"`
+	Name      string    `json:"name"`
+	Bio       string    `json:"bio"`
+	Image     *string   `json:"image"`
+}

@@ -15,6 +15,10 @@ func SetupRouter() *gin.Engine {
 	api.POST("/signup", controllers.Signup)
 	api.POST("/login", controllers.Login)
 	api.GET("/validate", middleware.RequireAuth, controllers.Validate)
+	api.PATCH("/confirmEmail/:token", middleware.RequireAuth, controllers.ConfirmEmail)
+	api.PATCH("/changePassword", middleware.RequireAuth, controllers.UpdatePassword)
+	api.GET("/user/:userID", controllers.GetUserByID)
+	api.GET("/user", controllers.GetUsers)
 
 	// Post Routes
 	api.POST("/post", middleware.RequireAuth, controllers.CreatePost)
@@ -34,9 +38,6 @@ func SetupRouter() *gin.Engine {
 	api.POST("comment/:postId", middleware.RequireAuth, controllers.CreateComment)
 	api.DELETE("comment/:commentId", middleware.RequireAuth, controllers.DeleteComment)
 	api.GET("comment/byPostId/:postId", controllers.GetCommentsByPostId)
-
-	// Test mail route
-	api.GET("/testMail", controllers.SendMail)
 
 	return r
 }
