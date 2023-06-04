@@ -17,10 +17,7 @@ func CreatePost(userID uint, req models.PostCreateRequestDTO) (*models.Post, err
 
 	// Create post
 	db := initalizers.DB
-	post := models.Post{
-		UserID:  userID,
-		Content: req.Content,
-	}
+	post := *models.ConvertRequestDTOToPost(req, userID)
 
 	result := db.Create(&post)
 	if result.Error != nil {
@@ -80,19 +77,7 @@ func GetPostsByUserID(userID string, limit int, page int) ([]*models.PostGetResp
 
 	var dtos []*models.PostGetResponseDTO
 	for _, post := range posts {
-		dto := models.PostGetResponseDTO{
-			ID:        post.ID,
-			CreatedAt: post.CreatedAt,
-			User: models.UserGetResponseDTO{
-				ID:        post.User.ID,
-				Username:  post.User.Username,
-				BirthDate: post.User.BirthDate,
-				Name:      post.User.Name,
-				Bio:       post.User.Bio,
-				Image:     post.User.Image,
-			},
-			Content: post.Content,
-		}
+		dto := *post.ConvertPostToResponseDTO()
 		dtos = append(dtos, &dto)
 	}
 
@@ -110,19 +95,7 @@ func GetPostByID(postID string) (*models.PostGetResponseDTO, error) {
 	}
 
 	// Create response dto
-	responsePost := models.PostGetResponseDTO{
-		ID:        post.ID,
-		CreatedAt: post.CreatedAt,
-		User: models.UserGetResponseDTO{
-			ID:        post.User.ID,
-			Username:  post.User.Username,
-			BirthDate: post.User.BirthDate,
-			Name:      post.User.Name,
-			Bio:       post.User.Bio,
-			Image:     post.User.Image,
-		},
-		Content: post.Content,
-	}
+	responsePost := *post.ConvertPostToResponseDTO()
 
 	return &responsePost, nil
 }
@@ -158,19 +131,7 @@ func GetPostsForCurrentUser(userID string, limit int, page int) ([]*models.PostG
 
 	var dtos []*models.PostGetResponseDTO
 	for _, post := range posts {
-		dto := models.PostGetResponseDTO{
-			ID:        post.ID,
-			CreatedAt: post.CreatedAt,
-			User: models.UserGetResponseDTO{
-				ID:        post.User.ID,
-				Username:  post.User.Username,
-				BirthDate: post.User.BirthDate,
-				Name:      post.User.Name,
-				Bio:       post.User.Bio,
-				Image:     post.User.Image,
-			},
-			Content: post.Content,
-		}
+		dto := *post.ConvertPostToResponseDTO()
 		dtos = append(dtos, &dto)
 	}
 
@@ -202,21 +163,10 @@ func GetAllPosts(limit int, page int) ([]*models.PostGetResponseDTO, error) {
 	// Sort by created at desc
 	sortByCreatedAtDesc(posts)
 
+	// Create response dtos
 	var dtos []*models.PostGetResponseDTO
 	for _, post := range posts {
-		dto := models.PostGetResponseDTO{
-			ID:        post.ID,
-			CreatedAt: post.CreatedAt,
-			User: models.UserGetResponseDTO{
-				ID:        post.User.ID,
-				Username:  post.User.Username,
-				BirthDate: post.User.BirthDate,
-				Name:      post.User.Name,
-				Bio:       post.User.Bio,
-				Image:     post.User.Image,
-			},
-			Content: post.Content,
-		}
+		dto := *post.ConvertPostToResponseDTO()
 		dtos = append(dtos, &dto)
 	}
 

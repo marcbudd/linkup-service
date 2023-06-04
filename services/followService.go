@@ -59,7 +59,7 @@ func DeleteFollow(userIDFollowing uint, userIDFollowed string) error {
 }
 
 // Get lists of user that are followed by a user
-func GetFollowingsOfUserID(userID string) ([]*models.FollowingsOfUserGetResponseDTO, error) {
+func GetFollowingsOfUserID(userID string) ([]*models.FollowGetResponseDTO, error) {
 
 	// Get follows of a user
 	db := initalizers.DB
@@ -70,14 +70,9 @@ func GetFollowingsOfUserID(userID string) ([]*models.FollowingsOfUserGetResponse
 	}
 
 	// Create response object
-	var dtos []*models.FollowingsOfUserGetResponseDTO
+	var dtos []*models.FollowGetResponseDTO
 	for _, follow := range follows {
-		dto := models.FollowingsOfUserGetResponseDTO{
-			ID:       follow.UserFollowed.ID,
-			Username: follow.UserFollowed.Username,
-			Name:     follow.UserFollowed.Name,
-			Image:    follow.UserFollowed.Image,
-		}
+		dto := *follow.ConvertFollowingToResponseDTO()
 
 		dtos = append(dtos, &dto)
 	}
@@ -86,7 +81,7 @@ func GetFollowingsOfUserID(userID string) ([]*models.FollowingsOfUserGetResponse
 }
 
 // Get lists of user that are following user
-func GetFollowersOfUserID(userID string) ([]*models.FollowerOfUserGetResponseDTO, error) {
+func GetFollowersOfUserID(userID string) ([]*models.FollowGetResponseDTO, error) {
 
 	// Get follower of a user
 	db := initalizers.DB
@@ -97,14 +92,9 @@ func GetFollowersOfUserID(userID string) ([]*models.FollowerOfUserGetResponseDTO
 	}
 
 	// Create response object
-	var dtos []*models.FollowerOfUserGetResponseDTO
+	var dtos []*models.FollowGetResponseDTO
 	for _, follow := range follows {
-		dto := models.FollowerOfUserGetResponseDTO{
-			ID:       follow.UserFollowing.ID,
-			Username: follow.UserFollowing.Username,
-			Name:     follow.UserFollowing.Name,
-			Image:    follow.UserFollowing.Image,
-		}
+		dto := *follow.ConvertFollowerToResponseDTO()
 
 		dtos = append(dtos, &dto)
 	}

@@ -17,9 +17,29 @@ type PostCreateRequestDTO struct {
 	Content string `json:"content" validate:"required,max=280"`
 }
 
+// function to convert request dto to post
+// can be called everywhere, changes can be made in one place
+func ConvertRequestDTOToPost(req PostCreateRequestDTO, userID uint) *Post {
+	return &Post{
+		UserID:  userID,
+		Content: req.Content,
+	}
+}
+
 type PostGetResponseDTO struct {
 	ID        uint               `json:"id"`
 	CreatedAt time.Time          `json:"createdAt"`
 	User      UserGetResponseDTO `json:"user"`
 	Content   string             `json:"content"`
+}
+
+// function to convert post to response dto
+// can be called everywhere, changes can be made in one place
+func (p *Post) ConvertPostToResponseDTO() *PostGetResponseDTO {
+	return &PostGetResponseDTO{
+		ID:        p.ID,
+		CreatedAt: p.CreatedAt,
+		User:      *p.User.ConvertUserToResponseDTO(),
+		Content:   p.Content,
+	}
 }

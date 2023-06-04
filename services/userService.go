@@ -38,14 +38,10 @@ func CreateUser(req models.UserCreateRequestDTO) (*models.User, error) {
 	if err != nil {
 		return nil, errors.New("failed to hash password")
 	}
+	req.Password = passwordHashed
 
 	// Create user
-	user := models.User{
-		Username:       req.Username,
-		Email:          req.Email,
-		PasswordHash:   passwordHashed,
-		EmailConfirmed: false,
-	}
+	user := *models.ConvertRequestDTOToUser(req)
 
 	err = db.Save(&user).Error
 	if err != nil {
@@ -142,14 +138,7 @@ func GetUserByID(id string) (*models.UserGetResponseDTO, error) {
 	var user models.User
 	err := db.Where("id = ?", id).First(&user).Error
 
-	var responseUser = models.UserGetResponseDTO{
-		ID:        user.ID,
-		Username:  user.Username,
-		BirthDate: user.BirthDate,
-		Name:      user.Name,
-		Bio:       user.Bio,
-		Image:     user.Image,
-	}
+	var responseUser = *user.ConvertUserToResponseDTO()
 	return &responseUser, err
 }
 
@@ -178,17 +167,21 @@ func GetUsers(query string, page int, limit int) (*[]models.UserGetResponseDTO, 
 }
 
 func UpdateUser(userID uint, req models.UserUpdateRequestDTO) error {
-	// Find user by id
+
+	// Check if username already exists
+	var count int64 = 0
 	db := initalizers.DB
+	db.Model(&models.User{}).Where("username = ?", req.Username).Count(&count)
+	if count > 0 {
+		return errors.New("username is already taken")
+	}
+
+	// Find user by id
 	var user models.User
 	db.Where("id = ?", userID).First(&user)
 
 	// Update user
-	user.Username = req.Username
-	user.BirthDate = req.BirthDate
-	user.Name = req.Bio
-	user.Bio = req.Bio
-	user.Image = req.Image
+	user.UpdateUser(req)
 
 	err := db.Save(&user).Error
 

@@ -59,7 +59,7 @@ func DeleteLike(userID uint, postID string) error {
 }
 
 // Get likes of post
-func GetLikesByPostID(postID string) ([]*models.LikesOfPostGetResponseDTO, error) {
+func GetLikesByPostID(postID string) ([]*models.LikesGetResponseDTO, error) {
 
 	// Get likes
 	db := initalizers.DB
@@ -71,15 +71,9 @@ func GetLikesByPostID(postID string) ([]*models.LikesOfPostGetResponseDTO, error
 	}
 
 	// Create response object
-	var dtos []*models.LikesOfPostGetResponseDTO
+	var dtos []*models.LikesGetResponseDTO
 	for _, like := range likes {
-		dto := models.LikesOfPostGetResponseDTO{
-			ID:       like.User.ID,
-			Username: like.User.Username,
-			Name:     like.User.Name,
-			Image:    like.User.Image,
-		}
-
+		dto := *like.ConvertLikeToResponseDTO()
 		dtos = append(dtos, &dto)
 	}
 

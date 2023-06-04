@@ -30,7 +30,7 @@ EMAIL_ADDRESS=
 EMAIL_PASSWORD=
 ```
 
-Stelle sicher, dass du die PostgreSQL-Datenbank mit den entsprechenden Credentials eingerichtet hast und die Werte in der `.env`-Datei aktualisierst, um eine erfolgreiche Verbindung herzustellen.
+Stelle sicher, dass du eine PostgreSQL-Datenbank und einen Email-Server mit den entsprechenden Credentials eingerichtet hast und die Werte in der `.env`-Datei aktualisierst, um eine erfolgreiche Verbindung herzustellen.
 
 ## Installation
 

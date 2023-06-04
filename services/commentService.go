@@ -16,11 +16,7 @@ func CreateComment(userID uint, req models.CommentCreateRequestDTO) error {
 
 	// Create comment
 	db := initalizers.DB
-	comment := models.Comment{
-		UserID:  userID,
-		PostID:  req.PostID,
-		Comment: req.Comment,
-	}
+	comment := models.ConvertRequestDTOToComment(req, userID)
 
 	result := db.Create(&comment)
 	if result.Error != nil {
@@ -70,19 +66,7 @@ func GetCommentsByPostID(postID string) ([]*models.CommentGetResponseDTO, error)
 	// converto to DTO
 	var dtos []*models.CommentGetResponseDTO
 	for _, comment := range comments {
-		dto := models.CommentGetResponseDTO{
-			ID:        comment.ID,
-			CreatedAt: comment.CreatedAt,
-			User: models.UserGetResponseDTO{
-				ID:        comment.User.ID,
-				Username:  comment.User.Username,
-				BirthDate: comment.User.BirthDate,
-				Name:      comment.User.Name,
-				Bio:       comment.User.Bio,
-				Image:     comment.User.Image,
-			},
-			Comment: comment.Comment,
-		}
+		dto := *comment.ConvertCommentToResponseDTO()
 
 		dtos = append(dtos, &dto)
 	}
