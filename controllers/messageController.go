@@ -32,7 +32,7 @@ func CreateMessage(c *gin.Context) {
 	err := services.CreateMessage(userID.(uint), messageCreateRequestDTO)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.JSON(err.HTTPStatusCode(), gin.H{
 			"error": err.Error(),
 		})
 		return
@@ -64,7 +64,7 @@ func GetMessagesByChat(c *gin.Context) {
 	messages, err := services.GetMessagesByChat(userID.(uint), chatPartnerID)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.JSON(err.HTTPStatusCode(), gin.H{
 			"error": err.Error(),
 		})
 		return

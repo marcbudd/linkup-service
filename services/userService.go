@@ -1,24 +1,25 @@
 package services
 
 import (
-	"errors"
+	"net/http"
 	"time"
 
 	"github.com/marcbudd/linkup-service/initalizers"
+	"github.com/marcbudd/linkup-service/linkuperrors"
 	"github.com/marcbudd/linkup-service/models"
 	"github.com/marcbudd/linkup-service/utils"
 )
 
-func CreateUser(req models.UserCreateRequestDTO) (*models.User, error) {
+func CreateUser(req models.UserCreateRequestDTO) (*models.User, *linkuperrors.LinkupError) {
 	// Validate input
 	if !utils.IsValidEmail(req.Email) {
-		return nil, errors.New("email is not valid")
+		return nil, linkuperrors.New("email is not valid", http.StatusBadRequest)
 	}
 	if !utils.IsValidUsername(req.Username) {
-		return nil, errors.New("username is not valid")
+		return nil, linkuperrors.New("username is not valid", http.StatusBadRequest)
 	}
 	if !utils.IsValidPassword(req.Password) {
-		return nil, errors.New("password is not valid")
+		return nil, linkuperrors.New("password is not strong enough", http.StatusBadRequest)
 	}
 
 	// Check if user exists
@@ -26,60 +27,60 @@ func CreateUser(req models.UserCreateRequestDTO) (*models.User, error) {
 	var count int64 = 0
 	db.Model(&models.User{}).Where("email = ?", req.Email).Count(&count)
 	if count > 0 {
-		return nil, errors.New("email is already taken")
+		return nil, linkuperrors.New("email is already taken", http.StatusConflict)
 	}
 	db.Model(&models.User{}).Where("username = ?", req.Username).Count(&count)
 	if count > 0 {
-		return nil, errors.New("username is already taken")
+		return nil, linkuperrors.New("username is already taken", http.StatusConflict)
 	}
 
 	//Hash password
 	passwordHashed, err := utils.HashPassword(req.Password)
 	if err != nil {
-		return nil, errors.New("failed to hash password")
+		return nil, linkuperrors.New("failed to hash password", http.StatusInternalServerError)
 	}
+	req.Password = passwordHashed
 
 	// Create user
-	user := models.User{
-		Username:       req.Username,
-		Email:          req.Email,
-		PasswordHash:   passwordHashed,
-		EmailConfirmed: false,
-	}
+	user := *models.ConvertRequestDTOToUser(req)
 
 	err = db.Save(&user).Error
 	if err != nil {
-		return nil, err
+		return nil, linkuperrors.New(err.Error(), http.StatusInternalServerError)
 	}
 
 	// Create token and send mail
 	token, err := CreateToken(user.ID)
 	if err != nil {
-		return nil, err
+		return nil, linkuperrors.New(err.Error(), http.StatusInternalServerError)
 	}
-	SendTokenMail(user.Email, token.TokenString)
 
-	return &user, err
-}
-
-func LoginUser(req models.UserLoginRequestDTO) (*models.User, error) {
-	// Find user by email
-	db := initalizers.DB
-	var user models.User
-	err := db.Where("email = ?", req.Email).First(&user).Error
+	err = SendTokenMail(user.Email, token.TokenString)
 	if err != nil {
-		return nil, errors.New("email or password is incorrect")
-	}
-
-	// Check password
-	if !utils.CheckPassword(req.Password, user.PasswordHash) {
-		return nil, errors.New("email or password is incorrect")
+		return nil, linkuperrors.New(err.Error(), http.StatusInternalServerError)
 	}
 
 	return &user, nil
 }
 
-func ConfirmEmail(userID uint, tokenString string) error {
+func LoginUser(req models.UserLoginRequestDTO) (*models.User, *linkuperrors.LinkupError) {
+	// Find user by email
+	db := initalizers.DB
+	var user models.User
+	err := db.Where("email = ?", req.Email).First(&user).Error
+	if err != nil {
+		return nil, linkuperrors.New("email or password is incorrect", http.StatusUnauthorized)
+	}
+
+	// Check password
+	if !utils.CheckPassword(req.Password, user.PasswordHash) {
+		return nil, linkuperrors.New("email or password is incorrect", http.StatusUnauthorized)
+	}
+
+	return &user, nil
+}
+
+func ConfirmEmail(userID uint, tokenString string) *linkuperrors.LinkupError {
 	db := initalizers.DB
 
 	var user models.User
@@ -91,69 +92,72 @@ func ConfirmEmail(userID uint, tokenString string) error {
 	if err != nil || token.UserID != user.ID || token.ExpirationDate.After(time.Now()) {
 		token, _ := CreateToken(userID)
 		SendTokenMail(user.Email, token.TokenString)
-		return errors.New("token is expired")
+		return linkuperrors.New("token is expired or not found", http.StatusUnauthorized)
 	}
 
-	// Set email to confirmed
+	// Set token to confirmed and send email
 	ConfirmToken(token)
 	user.EmailConfirmed = true
 	db.Save(&user)
-	SendConfirmedEmail(user.Email)
+	err = SendConfirmedEmail(user.Email)
+	if err != nil {
+		return linkuperrors.New(err.Error(), http.StatusInternalServerError)
+	}
 
 	return nil
 
 }
 
-func UpdatePassword(userID uint, req models.UserUpdatePasswortRequestDTO) error {
+func UpdatePassword(userID uint, req models.UserUpdatePasswortRequestDTO) *linkuperrors.LinkupError {
 
 	// Find user by id
 	db := initalizers.DB
 	var user models.User
 	err := db.Where("id = ?", userID).First(&user).Error
 	if err != nil {
-		return errors.New("user not found")
+		return linkuperrors.New("user not found", http.StatusNotFound)
 	}
 
 	// Check password
 	if !utils.CheckPassword(req.OldPassword, user.PasswordHash) {
-		return errors.New("old password is incorrect")
+		return linkuperrors.New("old password is incorrect", http.StatusUnauthorized)
 	}
 
 	isStrong := utils.IsValidPassword(req.NewPassword)
 	if !isStrong {
-		return errors.New("password is not strong enough")
+		return linkuperrors.New("password is not strong enough", http.StatusBadRequest)
 	}
 
 	// Hash password
 	passwordHashed, err := utils.HashPassword(req.NewPassword)
 	if err != nil {
-		return errors.New("failed to hash password")
+		return linkuperrors.New("failed to hash password", http.StatusInternalServerError)
 	}
 
 	// Update password
 	user.PasswordHash = passwordHashed
-	db.Save(&user)
+	err = db.Save(&user).Error
+
+	if err != nil {
+		return linkuperrors.New(err.Error(), http.StatusInternalServerError)
+	}
 
 	return nil
 }
 
-func GetUserByID(id string) (*models.UserGetResponseDTO, error) {
+func GetUserByID(id string) (*models.UserGetResponseDTO, *linkuperrors.LinkupError) {
 	db := initalizers.DB
 	var user models.User
 	err := db.Where("id = ?", id).First(&user).Error
-
-	var responseUser = models.UserGetResponseDTO{
-		ID:        user.ID,
-		Username:  user.Username,
-		BirthDate: user.BirthDate,
-		Name:      user.Name,
-		Bio:       user.Bio,
-		Image:     user.Image,
+	if err != nil {
+		return nil, linkuperrors.New("user not found", http.StatusNotFound)
 	}
-	return &responseUser, err
+
+	var responseUser = *user.ConvertUserToResponseDTO()
+	return &responseUser, nil
 }
 
-func GetUsers(query string, page int, limit int) (*[]models.UserGetResponseDTO, error) {
+func GetUsers(query string, page int, limit int) (*[]models.UserGetResponseDTO, *linkuperrors.LinkupError) {
 	db := initalizers.DB
 	var users []models.UserGetResponseDTO
 
@@ -174,46 +178,62 @@ func GetUsers(query string, page int, limit int) (*[]models.UserGetResponseDTO, 
 	// Perform database query with pagination
 	offset := (page - 1) * limit
 	err := dbQuery.Offset(offset).Limit(limit).Find(&users).Error
-	return &users, err
+	if err != nil {
+		return nil, linkuperrors.New(err.Error(), http.StatusInternalServerError)
+	}
+	return &users, nil
 }
 
-func UpdateUser(userID uint, req models.UserUpdateRequestDTO) error {
-	// Find user by id
+func UpdateUser(userID uint, req models.UserUpdateRequestDTO) *linkuperrors.LinkupError {
+
+	// Check if username already exists
+	var count int64 = 0
 	db := initalizers.DB
+	db.Model(&models.User{}).Where("username = ?", req.Username).Count(&count)
+	if count > 0 {
+		return linkuperrors.New("username is already taken", http.StatusConflict)
+	}
+
+	// Find user by id
 	var user models.User
 	db.Where("id = ?", userID).First(&user)
 
 	// Update user
-	user.Username = req.Username
-	user.BirthDate = req.BirthDate
-	user.Name = req.Bio
-	user.Bio = req.Bio
-	user.Image = req.Image
+	user.UpdateUser(req)
 
 	err := db.Save(&user).Error
+	if err != nil {
+		return linkuperrors.New(err.Error(), http.StatusInternalServerError)
+	}
 
-	return err
+	return nil
 
 }
 
-func UpdatePasswordForgotten(req models.UserUpdatePasswordForgottenRequestDTO) error {
+func UpdatePasswordForgotten(req models.UserUpdatePasswordForgottenRequestDTO) *linkuperrors.LinkupError {
 	db := initalizers.DB
 	var user models.User
 	result := db.Where("email = ?", req.Email).First(&user)
 
 	if result.Error != nil {
-		return errors.New("user not found")
+		return linkuperrors.New("user not found", http.StatusNotFound)
 	}
 
 	randomPassword, _ := utils.GenerateTokenString(20)
 	passwordHashed, err := utils.HashPassword(randomPassword)
 	if err != nil {
-		return errors.New("failed to hash password")
+		return linkuperrors.New("failed to hash password", http.StatusInternalServerError)
 	}
 
+	// Update Password
 	user.PasswordHash = passwordHashed
 	db.Save(&user)
-	SendPasswordForgottenMail(user.Email, randomPassword)
+
+	// Send new password
+	err = SendPasswordForgottenMail(user.Email, randomPassword)
+	if err != nil {
+		return linkuperrors.New(err.Error(), http.StatusInternalServerError)
+	}
 
 	return nil
 

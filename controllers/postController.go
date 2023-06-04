@@ -33,7 +33,7 @@ func CreatePost(c *gin.Context) {
 	// Create post
 	post, err := services.CreatePost(userID.(uint), postCreateRequestDTO)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.JSON(err.HTTPStatusCode(), gin.H{
 			"error": err.Error(),
 		})
 		return
@@ -64,7 +64,7 @@ func DeletePost(c *gin.Context) {
 	// Delete post
 	err := services.DeletePost(userID.(uint), postID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(err.HTTPStatusCode(), gin.H{
 			"error": err.Error(),
 		})
 		return
@@ -87,7 +87,7 @@ func GetPostByID(c *gin.Context) {
 	// Get post
 	post, err := services.GetPostByID(postID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.JSON(err.HTTPStatusCode(), gin.H{
 			"error": err.Error(),
 		})
 		return
@@ -120,10 +120,10 @@ func GetPostsByCurrentUser(c *gin.Context) {
 	}
 
 	// Get posts
-	posts, err := services.GetPostsByUserID(strconv.Itoa(int(userID.(uint))), int(limit), int(page))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
+	posts, serviceErr := services.GetPostsByUserID(strconv.Itoa(int(userID.(uint))), int(limit), int(page))
+	if serviceErr != nil {
+		c.JSON(serviceErr.HTTPStatusCode(), gin.H{
+			"error": serviceErr.Error(),
 		})
 		return
 	}
@@ -153,10 +153,10 @@ func GetPostsByUserID(c *gin.Context) {
 	}
 
 	// Get posts
-	posts, err := services.GetPostsByUserID(userID, int(limit), int(page))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
+	posts, serviceErr := services.GetPostsByUserID(userID, int(limit), int(page))
+	if serviceErr != nil {
+		c.JSON(serviceErr.HTTPStatusCode(), gin.H{
+			"error": serviceErr.Error(),
 		})
 		return
 	}
@@ -185,10 +185,10 @@ func GetPostsForCurrentUser(c *gin.Context) {
 	}
 
 	// Get posts
-	posts, err := services.GetPostsForCurrentUser(userID, int(limit), int(page))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
+	posts, serviceErr := services.GetPostsForCurrentUser(userID, int(limit), int(page))
+	if serviceErr != nil {
+		c.JSON(serviceErr.HTTPStatusCode(), gin.H{
+			"error": serviceErr.Error(),
 		})
 		return
 	}
@@ -210,10 +210,10 @@ func GetPosts(c *gin.Context) {
 	}
 
 	// Get posts
-	posts, err := services.GetAllPosts(int(limit), int(page))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
+	posts, serviceErr := services.GetAllPosts(int(limit), int(page))
+	if serviceErr != nil {
+		c.JSON(serviceErr.HTTPStatusCode(), gin.H{
+			"error": serviceErr.Error(),
 		})
 		return
 	}

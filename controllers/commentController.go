@@ -32,7 +32,7 @@ func CreateComment(c *gin.Context) {
 	err := services.CreateComment(userID.(uint), commentCreateRequestDTO)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(err.HTTPStatusCode(), gin.H{
 			"error": err.Error(),
 		})
 		return
@@ -65,7 +65,9 @@ func DeleteComment(c *gin.Context) {
 	err := services.DeleteComment(userID.(uint), commentID)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{})
+		c.JSON(err.HTTPStatusCode(), gin.H{
+			"error": err.Error(),
+		})
 		return
 	}
 
@@ -85,7 +87,7 @@ func GetCommentsByPostId(c *gin.Context) {
 	comments, err := services.GetCommentsByPostID(postID)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.JSON(err.HTTPStatusCode(), gin.H{
 			"error": err.Error(),
 		})
 		return

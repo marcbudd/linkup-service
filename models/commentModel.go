@@ -19,9 +19,30 @@ type CommentCreateRequestDTO struct {
 	Comment string `json:"comment" validate:"required,max=280"`
 }
 
+// function to convert comment to response dto
+// can be called everywhere, changes can be made in one place
+func ConvertRequestDTOToComment(req CommentCreateRequestDTO, userID uint) *Comment {
+	return &Comment{
+		UserID:  userID,
+		PostID:  req.PostID,
+		Comment: req.Comment,
+	}
+}
+
 type CommentGetResponseDTO struct {
 	ID        uint               `json:"id"`
 	CreatedAt time.Time          `json:"createdAt"`
 	User      UserGetResponseDTO `json:"user"`
 	Comment   string             `json:"comment"`
+}
+
+// function to convert comment to respone dto
+// can be called everywhere, changes can be made in one place
+func (c *Comment) ConvertCommentToResponseDTO() *CommentGetResponseDTO {
+	return &CommentGetResponseDTO{
+		ID:        c.ID,
+		CreatedAt: c.CreatedAt,
+		User:      *c.User.ConvertUserToResponseDTO(),
+		Comment:   c.Comment,
+	}
 }

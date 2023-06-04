@@ -24,10 +24,10 @@ func Signup(c *gin.Context) {
 	}
 
 	// Create user
-	user, err := services.CreateUser(userCreateDTO)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
+	user, serviceErr := services.CreateUser(userCreateDTO)
+	if serviceErr != nil {
+		c.JSON(serviceErr.HTTPStatusCode(), gin.H{
+			"error": serviceErr.Error(),
 		})
 		return
 	}
@@ -64,10 +64,10 @@ func Login(c *gin.Context) {
 	}
 
 	// Look up requested user
-	user, err := services.LoginUser(userLoginRequestDTO)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
+	user, serviceErr := services.LoginUser(userLoginRequestDTO)
+	if serviceErr != nil {
+		c.JSON(serviceErr.HTTPStatusCode(), gin.H{
+			"error": serviceErr.Error(),
 		})
 	}
 
@@ -120,7 +120,7 @@ func ConfirmEmail(c *gin.Context) {
 	// Confirm email
 	err := services.ConfirmEmail(userID.(uint), c.Param("token"))
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
+		c.JSON(err.HTTPStatusCode(), gin.H{
 			"error": err.Error(),
 		})
 		return
@@ -156,7 +156,7 @@ func UpdatePassword(c *gin.Context) {
 	// Update password
 	err := services.UpdatePassword(userID.(uint), updatePasswordDTO)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(err.HTTPStatusCode(), gin.H{
 			"error": err.Error(),
 		})
 		return
@@ -175,7 +175,7 @@ func GetUserByID(c *gin.Context) {
 	// Get user
 	user, err := services.GetUserByID(userID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(err.HTTPStatusCode(), gin.H{
 			"error": err.Error(),
 		})
 		return
@@ -199,9 +199,9 @@ func GetUsers(c *gin.Context) {
 	}
 
 	// Get users
-	users, err := services.GetUsers(query, int(limit), int(page))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+	users, serviceErr := services.GetUsers(query, int(limit), int(page))
+	if serviceErr != nil {
+		c.JSON(serviceErr.HTTPStatusCode(), gin.H{
 			"error": err.Error(),
 		})
 		return
@@ -236,7 +236,7 @@ func UpdateUser(c *gin.Context) {
 	// Update user
 	err := services.UpdateUser(userID.(uint), updateUpdateDTO)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(err.HTTPStatusCode(), gin.H{
 			"error": err.Error(),
 		})
 		return
@@ -258,7 +258,9 @@ func UpdatePasswordForgotten(c *gin.Context) {
 	// Reset password
 	err := services.UpdatePasswordForgotten(updatePasswordForgottenDTO)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{})
+		c.JSON(err.HTTPStatusCode(), gin.H{
+			"error": err.Error(),
+		})
 		return
 	}
 

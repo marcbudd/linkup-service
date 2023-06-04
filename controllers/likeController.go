@@ -29,7 +29,7 @@ func CreateLike(c *gin.Context) {
 	err := services.CreateLike(userID.(uint), postID)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.JSON(err.HTTPStatusCode(), gin.H{
 			"error": err.Error(),
 		})
 		return
@@ -61,7 +61,7 @@ func DeleteLike(c *gin.Context) {
 	// Delete like
 	err := services.DeleteLike(userID.(uint), postID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(err.HTTPStatusCode(), gin.H{
 			"error": err.Error(),
 		})
 		return
@@ -83,7 +83,7 @@ func GetLikesByPostId(c *gin.Context) {
 	// Get likes
 	likes, err := services.GetLikesByPostID(postID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.JSON(err.HTTPStatusCode(), gin.H{
 			"error": err.Error(),
 		})
 		return
