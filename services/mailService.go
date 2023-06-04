@@ -1,12 +1,11 @@
 package services
 
 import (
-	"fmt"
 	"net/smtp"
 	"os"
 )
 
-func SendTokenMail(receiver string, token string) {
+func SendTokenMail(receiver string, token string) error {
 
 	from := os.Getenv("EMAIL_ADDRESS")
 	password := os.Getenv("EMAIL_PASSWORD")
@@ -25,14 +24,11 @@ func SendTokenMail(receiver string, token string) {
 
 	err := smtp.SendMail(address, auth, from, to, message)
 
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	return err
 
 }
 
-func SendConfirmedEmail(receiver string) {
+func SendConfirmedEmail(receiver string) error {
 	from := os.Getenv("EMAIL_ADDRESS")
 	password := os.Getenv("EMAIL_PASSWORD")
 	host := os.Getenv("EMAIL_HOST")
@@ -49,13 +45,10 @@ func SendConfirmedEmail(receiver string) {
 
 	err := smtp.SendMail(address, auth, from, to, message)
 
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	return err
 }
 
-func SendPasswordForgottenMail(receiver string, newPassword string) {
+func SendPasswordForgottenMail(receiver string, newPassword string) error {
 	from := os.Getenv("EMAIL_ADDRESS")
 	password := os.Getenv("EMAIL_PASSWORD")
 	host := os.Getenv("EMAIL_HOST")
@@ -72,8 +65,5 @@ func SendPasswordForgottenMail(receiver string, newPassword string) {
 
 	err := smtp.SendMail(address, auth, from, to, message)
 
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	return err
 }

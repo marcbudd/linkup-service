@@ -1,13 +1,15 @@
 package services
 
 import (
+	"net/http"
 	"strconv"
 
 	"github.com/marcbudd/linkup-service/initalizers"
+	"github.com/marcbudd/linkup-service/linkuperrors"
 	"github.com/marcbudd/linkup-service/models"
 )
 
-func CreateFollow(userIDFollowing uint, userIDFollowed string) error {
+func CreateFollow(userIDFollowing uint, userIDFollowed string) *linkuperrors.LinkupError {
 
 	// Check if user is already following
 	db := initalizers.DB
@@ -20,7 +22,7 @@ func CreateFollow(userIDFollowing uint, userIDFollowed string) error {
 	// Convert string to uint
 	temp, err := strconv.ParseUint(userIDFollowed, 10, 64)
 	if err != nil {
-		return err
+		return linkuperrors.New("invalid user id", http.StatusBadRequest)
 	}
 	userIDFollowedUint := uint(temp)
 
@@ -32,13 +34,13 @@ func CreateFollow(userIDFollowing uint, userIDFollowed string) error {
 	result := db.Create(&follow)
 
 	if result.Error != nil {
-		return result.Error
+		return linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
 	}
 
 	return nil
 }
 
-func DeleteFollow(userIDFollowing uint, userIDFollowed string) error {
+func DeleteFollow(userIDFollowing uint, userIDFollowed string) *linkuperrors.LinkupError {
 
 	// Get follow (if exists, else return nil)
 	// Delete every follow (if there are multiple)
@@ -47,7 +49,8 @@ func DeleteFollow(userIDFollowing uint, userIDFollowed string) error {
 	result := db.Where("user_following_id = ? AND user_followed_id = ?", userIDFollowing, userIDFollowed).Find(&follows)
 
 	if result.Error != nil {
-		return result.Error
+		return linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
+
 	}
 
 	// Delete likes
@@ -59,14 +62,15 @@ func DeleteFollow(userIDFollowing uint, userIDFollowed string) error {
 }
 
 // Get lists of user that are followed by a user
-func GetFollowingsOfUserID(userID string) ([]*models.FollowGetResponseDTO, error) {
+func GetFollowingsOfUserID(userID string) ([]*models.FollowGetResponseDTO, *linkuperrors.LinkupError) {
 
 	// Get follows of a user
 	db := initalizers.DB
 	var follows []*models.Follow
 	result := db.Where("user_follwing_id = ?", userID).Find(&follows)
 	if result.Error != nil {
-		return nil, result.Error
+		return nil, linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
+
 	}
 
 	// Create response object
@@ -81,14 +85,15 @@ func GetFollowingsOfUserID(userID string) ([]*models.FollowGetResponseDTO, error
 }
 
 // Get lists of user that are following user
-func GetFollowersOfUserID(userID string) ([]*models.FollowGetResponseDTO, error) {
+func GetFollowersOfUserID(userID string) ([]*models.FollowGetResponseDTO, *linkuperrors.LinkupError) {
 
 	// Get follower of a user
 	db := initalizers.DB
 	var follows []*models.Follow
 	result := db.Where("user_followed_id = ?", userID).Find(&follows)
 	if result.Error != nil {
-		return nil, result.Error
+		return nil, linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
+
 	}
 
 	// Create response object

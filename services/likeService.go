@@ -1,13 +1,15 @@
 package services
 
 import (
+	"net/http"
 	"strconv"
 
 	"github.com/marcbudd/linkup-service/initalizers"
+	"github.com/marcbudd/linkup-service/linkuperrors"
 	"github.com/marcbudd/linkup-service/models"
 )
 
-func CreateLike(userID uint, postID string) error {
+func CreateLike(userID uint, postID string) *linkuperrors.LinkupError {
 
 	// Check if user is already liking
 	db := initalizers.DB
@@ -20,7 +22,7 @@ func CreateLike(userID uint, postID string) error {
 	// Convert string to uint
 	temp, err := strconv.ParseUint(postID, 10, 64)
 	if err != nil {
-		return err
+		return linkuperrors.New(err.Error(), http.StatusBadRequest)
 	}
 	postIDUint := uint(temp)
 
@@ -32,13 +34,13 @@ func CreateLike(userID uint, postID string) error {
 	result := db.Create(&like)
 
 	if result.Error != nil {
-		return result.Error
+		return linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
 	}
 
 	return nil
 }
 
-func DeleteLike(userID uint, postID string) error {
+func DeleteLike(userID uint, postID string) *linkuperrors.LinkupError {
 
 	// Get like (if exists, else return nil)
 	// Delete every like (if there are multiple)
@@ -47,7 +49,7 @@ func DeleteLike(userID uint, postID string) error {
 	result := db.Where("user_id = ? AND post_id = ?", userID, postID).Find(&likes)
 
 	if result.Error != nil {
-		return result.Error
+		return linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
 	}
 
 	// Delete likes
@@ -59,7 +61,7 @@ func DeleteLike(userID uint, postID string) error {
 }
 
 // Get likes of post
-func GetLikesByPostID(postID string) ([]*models.LikesGetResponseDTO, error) {
+func GetLikesByPostID(postID string) ([]*models.LikesGetResponseDTO, *linkuperrors.LinkupError) {
 
 	// Get likes
 	db := initalizers.DB
@@ -67,7 +69,7 @@ func GetLikesByPostID(postID string) ([]*models.LikesGetResponseDTO, error) {
 	result := db.Where("post_id = ?", postID).Find(&likes)
 
 	if result.Error != nil {
-		return nil, result.Error
+		return nil, linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
 	}
 
 	// Create response object

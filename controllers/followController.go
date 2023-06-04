@@ -28,7 +28,7 @@ func CreateFollow(c *gin.Context) {
 	// Create follow
 	err := services.CreateFollow(userID.(uint), followedUserID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.JSON(err.HTTPStatusCode(), gin.H{
 			"error": err.Error(),
 		})
 		return
@@ -59,7 +59,7 @@ func DeleteFollow(c *gin.Context) {
 	// Delete follow
 	err := services.DeleteFollow(userID.(uint), followedUserID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.JSON(err.HTTPStatusCode(), gin.H{
 			"error": err.Error(),
 		})
 		return
@@ -81,7 +81,7 @@ func GetFollowingsOfUserID(c *gin.Context) {
 	// Get followings of user
 	followings, err := services.GetFollowingsOfUserID(userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.JSON(err.HTTPStatusCode(), gin.H{
 			"error": err.Error(),
 		})
 		return
@@ -104,7 +104,7 @@ func GetFollowersOfUserID(c *gin.Context) {
 	// Get follower of a user
 	followers, err := services.GetFollowersOfUserID(userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.JSON(err.HTTPStatusCode(), gin.H{
 			"error": err.Error(),
 		})
 		return

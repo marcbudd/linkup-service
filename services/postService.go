@@ -2,17 +2,19 @@ package services
 
 import (
 	"errors"
+	"net/http"
 	"sort"
 
 	"github.com/marcbudd/linkup-service/initalizers"
+	"github.com/marcbudd/linkup-service/linkuperrors"
 	"github.com/marcbudd/linkup-service/models"
 )
 
-func CreatePost(userID uint, req models.PostCreateRequestDTO) (*models.Post, error) {
+func CreatePost(userID uint, req models.PostCreateRequestDTO) (*models.Post, *linkuperrors.LinkupError) {
 
 	// Validate content
 	if len(req.Content) > 280 {
-		return nil, errors.New("content is over 280 chars")
+		return nil, linkuperrors.New("content is over 280 chars", http.StatusBadRequest)
 	}
 
 	// Create post
@@ -21,38 +23,38 @@ func CreatePost(userID uint, req models.PostCreateRequestDTO) (*models.Post, err
 
 	result := db.Create(&post)
 	if result.Error != nil {
-		return nil, result.Error
+		return nil, linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
 	}
 
 	return &post, nil
 
 }
 
-func DeletePost(userID uint, postID string) error {
+func DeletePost(userID uint, postID string) *linkuperrors.LinkupError {
 
 	// Get post
 	db := initalizers.DB
 	var post models.Post
 	result := db.Where("id = ?", postID).First(&post)
 	if result.Error != nil {
-		return result.Error
+		return linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
 	}
 
 	// Check if user is owner of post
 	if post.UserID != userID {
-		return errors.New("user is not owner of post")
+		return linkuperrors.New(errors.New("user is not owner of post").Error(), http.StatusForbidden)
 	}
 
 	// Delete post
 	result = db.Delete(&post)
 	if result.Error != nil {
-		return result.Error
+		return linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
 	}
 
 	return nil
 }
 
-func GetPostsByUserID(userID string, limit int, page int) ([]*models.PostGetResponseDTO, error) {
+func GetPostsByUserID(userID string, limit int, page int) ([]*models.PostGetResponseDTO, *linkuperrors.LinkupError) {
 	// Set default values: Pagination
 	if page <= 0 {
 		page = 1
@@ -69,7 +71,7 @@ func GetPostsByUserID(userID string, limit int, page int) ([]*models.PostGetResp
 	result := db.Where("user_id = ?", userID).Offset(offset).Limit(limit).Find(&posts)
 
 	if result.Error != nil {
-		return nil, result.Error
+		return nil, linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
 	}
 
 	// Sort by created at desc
@@ -84,14 +86,14 @@ func GetPostsByUserID(userID string, limit int, page int) ([]*models.PostGetResp
 	return dtos, nil
 }
 
-func GetPostByID(postID string) (*models.PostGetResponseDTO, error) {
+func GetPostByID(postID string) (*models.PostGetResponseDTO, *linkuperrors.LinkupError) {
 
 	// Get post by id
 	db := initalizers.DB
 	var post models.Post
 	result := db.Where("id = ?", postID).First(&post)
 	if result.Error != nil {
-		return nil, result.Error
+		return nil, linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
 	}
 
 	// Create response dto
@@ -100,7 +102,7 @@ func GetPostByID(postID string) (*models.PostGetResponseDTO, error) {
 	return &responsePost, nil
 }
 
-func GetPostsForCurrentUser(userID string, limit int, page int) ([]*models.PostGetResponseDTO, error) {
+func GetPostsForCurrentUser(userID string, limit int, page int) ([]*models.PostGetResponseDTO, *linkuperrors.LinkupError) {
 	// Set default values: Pagination
 	if page <= 0 {
 		page = 1
@@ -123,7 +125,7 @@ func GetPostsForCurrentUser(userID string, limit int, page int) ([]*models.PostG
 		Find(&posts)
 
 	if result.Error != nil {
-		return nil, result.Error
+		return nil, linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
 	}
 
 	// Sort by created at desc
@@ -139,7 +141,7 @@ func GetPostsForCurrentUser(userID string, limit int, page int) ([]*models.PostG
 
 }
 
-func GetAllPosts(limit int, page int) ([]*models.PostGetResponseDTO, error) {
+func GetAllPosts(limit int, page int) ([]*models.PostGetResponseDTO, *linkuperrors.LinkupError) {
 	// Set default values: Pagination
 	if page <= 0 {
 		page = 1
@@ -157,7 +159,7 @@ func GetAllPosts(limit int, page int) ([]*models.PostGetResponseDTO, error) {
 	result := db.Offset(offset).Limit(limit).Find(&posts)
 
 	if result.Error != nil {
-		return nil, result.Error
+		return nil, linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
 	}
 
 	// Sort by created at desc

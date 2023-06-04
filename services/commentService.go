@@ -1,17 +1,18 @@
 package services
 
 import (
-	"errors"
+	"net/http"
 
 	"github.com/marcbudd/linkup-service/initalizers"
+	"github.com/marcbudd/linkup-service/linkuperrors"
 	"github.com/marcbudd/linkup-service/models"
 )
 
-func CreateComment(userID uint, req models.CommentCreateRequestDTO) error {
+func CreateComment(userID uint, req models.CommentCreateRequestDTO) *linkuperrors.LinkupError {
 
 	// Validate content
 	if len(req.Comment) > 280 {
-		return errors.New("content is over 280 chars")
+		return linkuperrors.New("comment is over 280 characters", http.StatusBadRequest)
 	}
 
 	// Create comment
@@ -20,14 +21,14 @@ func CreateComment(userID uint, req models.CommentCreateRequestDTO) error {
 
 	result := db.Create(&comment)
 	if result.Error != nil {
-		return result.Error
+		return linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
 	}
 
 	return nil
 
 }
 
-func DeleteComment(userID uint, commentID string) error {
+func DeleteComment(userID uint, commentID string) *linkuperrors.LinkupError {
 
 	// Get comment
 	db := initalizers.DB
@@ -35,24 +36,24 @@ func DeleteComment(userID uint, commentID string) error {
 
 	result := db.Where("id = ?", commentID).First(&comment)
 	if result.Error != nil {
-		return result.Error
+		return linkuperrors.New(result.Error.Error(), 500)
 	}
 
 	// Check if user is owner of comment
 	if comment.UserID != userID {
-		return errors.New("user is not owner of comment")
+		return linkuperrors.New("user is not owner of comment", http.StatusForbidden)
 	}
 
 	// Delete comment
 	result = db.Delete(&comment)
 	if result.Error != nil {
-		return result.Error
+		return linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
 	}
 
 	return nil
 }
 
-func GetCommentsByPostID(postID string) ([]*models.CommentGetResponseDTO, error) {
+func GetCommentsByPostID(postID string) ([]*models.CommentGetResponseDTO, *linkuperrors.LinkupError) {
 
 	// Get comments
 	db := initalizers.DB
@@ -60,7 +61,8 @@ func GetCommentsByPostID(postID string) ([]*models.CommentGetResponseDTO, error)
 	result := db.Where("post_id = ?", postID).Find(&comments)
 
 	if result.Error != nil {
-		return nil, result.Error
+		return nil, linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
+
 	}
 
 	// converto to DTO
