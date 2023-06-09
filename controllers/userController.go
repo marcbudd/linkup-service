@@ -11,6 +11,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Signup creates a new user account
+// @Summary User Signup
+// @Description Create a new user account
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param userCreateDTO body models.UserCreateRequestDTO true "User information"
+// @Success 201 {object} models.UserGetResponseDTO
+// @Failure 400
+// @Failure 500
+// @Router /users/signup [post]
 func Signup(c *gin.Context) {
 
 	// Read body
@@ -46,10 +57,21 @@ func Signup(c *gin.Context) {
 	// Respond
 	c.SetSameSite(http.SameSiteLaxMode)
 	c.SetCookie("Authorization", tokenString, 3600*30*24, "", "", false, true)
-	c.JSON(http.StatusCreated, gin.H{})
+	c.JSON(http.StatusCreated, user)
 
 }
 
+// Login authenticates and logs in a user
+// @Summary User Login
+// @Description Authenticate and login a user
+// @Tags Authentication
+// @Accept json
+// @Param userLoginRequestDTO body models.UserLoginRequestDTO true "User credentials"
+// @Success 200
+// @Failure 400
+// @Failure 401
+// @Failure 500
+// @Router /users/login [post]
 func Login(c *gin.Context) {
 
 	// Read body
@@ -59,7 +81,6 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to read body",
 		})
-
 		return
 	}
 
@@ -78,7 +99,6 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to create token",
 		})
-
 		return
 	}
 
@@ -89,6 +109,14 @@ func Login(c *gin.Context) {
 
 }
 
+// Validate validates the user token and checks if the user is authorized
+// @Summary Validate User Token
+// @Description Validate the user token and check if the user is authorized
+// @Tags Authentication
+// @Security ApiKeyAuth
+// @Success 200
+// @Failure 401
+// @Router /validate [get]
 func Validate(c *gin.Context) {
 	// Get user id of logged in user
 	_, exists := c.Get("userID")
@@ -106,19 +134,28 @@ func Validate(c *gin.Context) {
 	})
 }
 
+// ConfirmEmail godoc
+// @Summary Confirm Email
+// @Description Confirm the user's email address using the provided token
+// @Tags Authentication
+// @Security ApiKeyAuth
+// @Accept json
+// @Produce json
+// @Param token path string true "Confirmation token"
+// @Success 200
+// @Failure 401
+// @Failure 404
+// @Router /users/confirm/{token} [patch]
 func ConfirmEmail(c *gin.Context) {
-	// Get user id of logged in user
-	userID, exists := c.Get("userID")
-
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "Not authorized",
-		})
+	// Get token from url
+	token := c.Param("token")
+	if token == "" {
+		c.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
 
 	// Confirm email
-	err := services.ConfirmEmail(userID.(uint), c.Param("token"))
+	err := services.ConfirmEmail(token)
 	if err != nil {
 		c.JSON(err.HTTPStatusCode(), gin.H{
 			"error": err.Error(),
@@ -131,6 +168,19 @@ func ConfirmEmail(c *gin.Context) {
 
 }
 
+// UpdatePassword updates the password of the logged-in user
+// @Summary Update Password
+// @Description Update the password of the logged-in user
+// @Tags User
+// @Security ApiKeyAuth
+// @Accept json
+// @Param password body models.UserUpdatePasswortRequestDTO true "New password"
+// @Success 200
+// @Failure 400
+// @Failure 401
+// @Failure 404
+// @Failure 500
+// @Router /users/updatePassword [patch]
 func UpdatePassword(c *gin.Context) {
 
 	// Read body
@@ -167,10 +217,25 @@ func UpdatePassword(c *gin.Context) {
 
 }
 
+// GetUserByID returns a user by their ID
+// @Summary Get User by ID
+// @Description Get a user by their ID
+// @Tags Users
+// @Produce json
+// @Param userID path int true "User ID"
+// @Success 200 {object} models.UserGetResponseDTO
+// @Failure 400
+// @Failure 401
+// @Failure 404
+// @Router /users/{userID} [get]
 func GetUserByID(c *gin.Context) {
 
 	// Get parameter from url
 	userID := c.Param("userID")
+	if userID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{})
+		return
+	}
 
 	// Get user
 	user, err := services.GetUserByID(userID)
@@ -185,6 +250,18 @@ func GetUserByID(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
+// GetUsers returns a list of users based on query parameters
+// @Summary Get Users
+// @Description Get a list of users based on query parameters
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param query query string false "Search query"
+// @Param limit query int false "Limit the number of results per page"
+// @Param page query int false "Page number"
+// @Success 200 {array} models.UserGetResponseDTO
+// @Failure 500
+// @Router /users [get]
 func GetUsers(c *gin.Context) {
 
 	// Get query paramters
@@ -212,6 +289,20 @@ func GetUsers(c *gin.Context) {
 
 }
 
+// UpdateUser updates the information of a user
+// @Summary Update user
+// @Description Update the user's information
+// @Tags Users
+// @Accept json
+// @Security ApiKeyAuth
+// @Param userID path int true "User ID"
+// @Param userUpdate body models.UserUpdateRequestDTO true "User update data"
+// @Success 200
+// @Failure 400
+// @Failure 401
+// @Failure 409
+// @Failure 500
+// @Router /users [patch]
 func UpdateUser(c *gin.Context) {
 	// Read body
 	var updateUpdateDTO models.UserUpdateRequestDTO
@@ -246,6 +337,17 @@ func UpdateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
+// UpdatePasswordForgotten resets the forgotten password
+// @Summary Reset forgotten password
+// @Description Reset the forgotten password
+// @Tags Users
+// @Accept json
+// @Param updatePasswordForgotten body models.UserUpdatePasswordForgottenRequestDTO true "User update password forgotten data"
+// @Success 200
+// @Failure 400
+// @Failure 404
+// @Failure 500
+// @Router /users/forgotPassword [patch]
 func UpdatePasswordForgotten(c *gin.Context) {
 	// Read body
 	var updatePasswordForgottenDTO models.UserUpdatePasswordForgottenRequestDTO
