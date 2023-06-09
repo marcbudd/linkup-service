@@ -8,11 +8,11 @@ import (
 	"github.com/marcbudd/linkup-service/models"
 )
 
-func CreateComment(userID uint, req models.CommentCreateRequestDTO) *linkuperrors.LinkupError {
+func CreateComment(userID uint, req models.CommentCreateRequestDTO) (*models.CommentGetResponseDTO, *linkuperrors.LinkupError) {
 
 	// Validate content
 	if len(req.Comment) > 280 {
-		return linkuperrors.New("comment is over 280 characters", http.StatusBadRequest)
+		return nil, linkuperrors.New("comment is over 280 characters", http.StatusBadRequest)
 	}
 
 	// Create comment
@@ -21,10 +21,10 @@ func CreateComment(userID uint, req models.CommentCreateRequestDTO) *linkuperror
 
 	result := db.Create(&comment)
 	if result.Error != nil {
-		return linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
+		return nil, linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
 	}
 
-	return nil
+	return comment.ConvertCommentToResponseDTO(), nil
 
 }
 
@@ -36,7 +36,7 @@ func DeleteComment(userID uint, commentID string) *linkuperrors.LinkupError {
 
 	result := db.Where("id = ?", commentID).First(&comment)
 	if result.Error != nil {
-		return linkuperrors.New(result.Error.Error(), 500)
+		return linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
 	}
 
 	// Check if user is owner of comment

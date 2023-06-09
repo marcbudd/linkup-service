@@ -1,6 +1,8 @@
 package main
 
 import (
+	_ "github.com/marcbudd/linkup-service/docs"
+
 	"github.com/marcbudd/linkup-service/initalizers"
 	"github.com/marcbudd/linkup-service/router"
 )

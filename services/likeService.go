@@ -61,7 +61,7 @@ func DeleteLike(userID uint, postID string) *linkuperrors.LinkupError {
 }
 
 // Get likes of post
-func GetLikesByPostID(postID string) ([]*models.LikesGetResponseDTO, *linkuperrors.LinkupError) {
+func GetLikesByPostID(postID string) ([]*models.LikeGetResponseDTO, *linkuperrors.LinkupError) {
 
 	// Get likes
 	db := initalizers.DB
@@ -73,7 +73,7 @@ func GetLikesByPostID(postID string) ([]*models.LikesGetResponseDTO, *linkuperro
 	}
 
 	// Create response object
-	var dtos []*models.LikesGetResponseDTO
+	var dtos []*models.LikeGetResponseDTO
 	for _, like := range likes {
 		dto := *like.ConvertLikeToResponseDTO()
 		dtos = append(dtos, &dto)

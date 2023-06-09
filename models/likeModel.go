@@ -12,7 +12,7 @@ type Like struct {
 	Post       Post `gorm:"foreignKey:PostID;not null"`
 }
 
-type LikesGetResponseDTO struct {
+type LikeGetResponseDTO struct {
 	ID       uint    `json:"id"`
 	UserID   uint    `json:"userID"`
 	Username string  `json:"username"`
@@ -22,8 +22,8 @@ type LikesGetResponseDTO struct {
 
 // Function to convert like to response dto
 // can be called everywhere, changes can be made in one place
-func (l *Like) ConvertLikeToResponseDTO() *LikesGetResponseDTO {
-	return &LikesGetResponseDTO{
+func (l *Like) ConvertLikeToResponseDTO() *LikeGetResponseDTO {
+	return &LikeGetResponseDTO{
 		ID:       l.ID,
 		UserID:   l.UserID,
 		Username: l.User.Username,

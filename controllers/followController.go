@@ -7,11 +7,23 @@ import (
 	"github.com/marcbudd/linkup-service/services"
 )
 
+// CreateFollow creates a follow relationship between users.
+// @Summary Create a follow relationship
+// @Description Creates a follow relationship between the logged-in user and the user with the specified followedUserID
+// @Tags Follows
+// @Security ApiKeyAuth
+// @Param Authorization header string true "Bearer token"
+// @Param followedUserID path string true "Followed User ID"
+// @Success 201
+// @Failure 400
+// @Failure 401
+// @Failure 500
+// @Router /follows/{followedUserID} [post]
 func CreateFollow(c *gin.Context) {
 
 	// Get user id from url
 	var followedUserID = c.Param("followedUserID")
-	if followedUserID == "0" {
+	if followedUserID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
@@ -38,11 +50,23 @@ func CreateFollow(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{})
 }
 
+// DeleteFollow deletes a follow relationship between users.
+// @Summary Delete a follow relationship
+// @Description Deletes the follow relationship between the logged-in user and the user with the specified followedUserID
+// @Tags Follows
+// @Security ApiKeyAuth
+// @Param Authorization header string true "Bearer token"
+// @Param followedUserID path string true "Followed User ID"
+// @Success 200
+// @Failure 400
+// @Failure 401
+// @Failure 500
+// @Router /follows/{followedUserID} [delete]
 func DeleteFollow(c *gin.Context) {
 
 	// Get user id from url
 	var followedUserID = c.Param("followedUserID")
-	if followedUserID == "0" {
+	if followedUserID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
@@ -69,17 +93,29 @@ func DeleteFollow(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
-func GetFollowingsOfUserID(c *gin.Context) {
+// GetFollowingsOfUserID retrieves the followings of a user by userID.
+// @Summary Get followings of a user
+// @Description Retrieves the list of followings for the user with the specified userID
+// @Tags Follows
+// @Produce json
+// @Security ApiKeyAuth
+// @Param Authorization header string true "Bearer token"
+// @Param userID path string true "User ID"
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /follows/{userID}/followings [get]
+func GetFollowingsByUserID(c *gin.Context) {
 
 	// Get user id from url
 	var userID = c.Param("userID")
-	if userID == "0" {
+	if userID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
 
 	// Get followings of user
-	followings, err := services.GetFollowingsOfUserID(userID)
+	followings, err := services.GetFollowingsByUserID(userID)
 	if err != nil {
 		c.JSON(err.HTTPStatusCode(), gin.H{
 			"error": err.Error(),
@@ -92,17 +128,29 @@ func GetFollowingsOfUserID(c *gin.Context) {
 
 }
 
-func GetFollowersOfUserID(c *gin.Context) {
+// GetFollowersByUserID retrieves the followers of a user by userID.
+// @Summary Get followers of a user
+// @Description Retrieves the list of followers for the user with the specified userID
+// @Tags Follows
+// @Produce json
+// @Security ApiKeyAuth
+// @Param Authorization header string true "Bearer token"
+// @Param userID path string true "User ID"
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /follows/{userID} [get]
+func GetFollowersByUserID(c *gin.Context) {
 
 	// Get user id from url
 	var userID = c.Param("userID")
-	if userID == "0" {
+	if userID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
 
 	// Get follower of a user
-	followers, err := services.GetFollowersOfUserID(userID)
+	followers, err := services.GetFollowersByUserID(userID)
 	if err != nil {
 		c.JSON(err.HTTPStatusCode(), gin.H{
 			"error": err.Error(),

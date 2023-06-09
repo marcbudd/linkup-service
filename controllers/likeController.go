@@ -7,11 +7,23 @@ import (
 	"github.com/marcbudd/linkup-service/services"
 )
 
+// CreateLike creates a like for a post.
+// @Summary Create a like for a post
+// @Description Creates a like for the post with the specified postID
+// @Tags Likes
+// @Security ApiKeyAuth
+// @Param Authorization header string true "Bearer token"
+// @Param postID path string true "Post ID"
+// @Success 201
+// @Failure 400
+// @Failure 401
+// @Failure 500
+// @Router /likes/{postID} [post]
 func CreateLike(c *gin.Context) {
 
 	// Get post id from url
 	postID := c.Param("postID")
-	if postID == "0" {
+	if postID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
@@ -40,11 +52,23 @@ func CreateLike(c *gin.Context) {
 
 }
 
+// DeleteLike deletes a like for a post.
+// @Summary Delete a like for a post
+// @Description Deletes the like for the post with the specified postID
+// @Tags Likes
+// @Security ApiKeyAuth
+// @Param Authorization header string true "Bearer token"
+// @Param postID path string true "Post ID"
+// @Success 200
+// @Failure 400
+// @Failure 401
+// @Failure 500
+// @Router /likes/{postID} [delete]
 func DeleteLike(c *gin.Context) {
 
 	// Get post id from url
 	postID := c.Param("postID")
-	if postID == "0" {
+	if postID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
@@ -71,11 +95,20 @@ func DeleteLike(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
+// GetLikesByPostId retrieves the likes for a post.
+// @Summary Get likes for a post
+// @Description Retrieves the likes for the post with the specified postID
+// @Tags Likes
+// @Param postID path string true "Post ID"
+// @Success 200 {array} models.LikeGetResponseDTO
+// @Failure 400
+// @Failure 500
+// @Router /likes/{postID} [get]
 func GetLikesByPostId(c *gin.Context) {
 
 	// Get post id from url
 	postID := c.Param("postID")
-	if postID == "0" {
+	if postID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}

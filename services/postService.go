@@ -10,7 +10,7 @@ import (
 	"github.com/marcbudd/linkup-service/models"
 )
 
-func CreatePost(userID uint, req models.PostCreateRequestDTO) (*models.Post, *linkuperrors.LinkupError) {
+func CreatePost(userID uint, req models.PostCreateRequestDTO) (*models.PostGetResponseDTO, *linkuperrors.LinkupError) {
 
 	// Validate content
 	if len(req.Content) > 280 {
@@ -26,7 +26,7 @@ func CreatePost(userID uint, req models.PostCreateRequestDTO) (*models.Post, *li
 		return nil, linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
 	}
 
-	return &post, nil
+	return post.ConvertPostToResponseDTO(), nil
 
 }
 
@@ -102,7 +102,7 @@ func GetPostByID(postID string) (*models.PostGetResponseDTO, *linkuperrors.Linku
 	return &responsePost, nil
 }
 
-func GetPostsForCurrentUser(userID string, limit int, page int) ([]*models.PostGetResponseDTO, *linkuperrors.LinkupError) {
+func GetPostsForCurrentUser(userID uint, limit int, page int) ([]*models.PostGetResponseDTO, *linkuperrors.LinkupError) {
 	// Set default values: Pagination
 	if page <= 0 {
 		page = 1

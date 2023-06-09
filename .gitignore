@@ -34,3 +34,5 @@ Thumbs.db
 /bin/
 
 .env
+node_modules/
+```

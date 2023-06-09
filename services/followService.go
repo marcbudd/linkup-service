@@ -62,7 +62,7 @@ func DeleteFollow(userIDFollowing uint, userIDFollowed string) *linkuperrors.Lin
 }
 
 // Get lists of user that are followed by a user
-func GetFollowingsOfUserID(userID string) ([]*models.FollowGetResponseDTO, *linkuperrors.LinkupError) {
+func GetFollowingsByUserID(userID string) ([]*models.FollowGetResponseDTO, *linkuperrors.LinkupError) {
 
 	// Get follows of a user
 	db := initalizers.DB
@@ -85,7 +85,7 @@ func GetFollowingsOfUserID(userID string) ([]*models.FollowGetResponseDTO, *link
 }
 
 // Get lists of user that are following user
-func GetFollowersOfUserID(userID string) ([]*models.FollowGetResponseDTO, *linkuperrors.LinkupError) {
+func GetFollowersByUserID(userID string) ([]*models.FollowGetResponseDTO, *linkuperrors.LinkupError) {
 
 	// Get follower of a user
 	db := initalizers.DB

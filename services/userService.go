@@ -10,7 +10,7 @@ import (
 	"github.com/marcbudd/linkup-service/utils"
 )
 
-func CreateUser(req models.UserCreateRequestDTO) (*models.User, *linkuperrors.LinkupError) {
+func CreateUser(req models.UserCreateRequestDTO) (*models.UserGetResponseDTO, *linkuperrors.LinkupError) {
 	// Validate input
 	if !utils.IsValidEmail(req.Email) {
 		return nil, linkuperrors.New("email is not valid", http.StatusBadRequest)
@@ -60,7 +60,7 @@ func CreateUser(req models.UserCreateRequestDTO) (*models.User, *linkuperrors.Li
 		return nil, linkuperrors.New(err.Error(), http.StatusInternalServerError)
 	}
 
-	return &user, nil
+	return user.ConvertUserToResponseDTO(), nil
 }
 
 func LoginUser(req models.UserLoginRequestDTO) (*models.User, *linkuperrors.LinkupError) {
@@ -80,17 +80,26 @@ func LoginUser(req models.UserLoginRequestDTO) (*models.User, *linkuperrors.Link
 	return &user, nil
 }
 
-func ConfirmEmail(userID uint, tokenString string) *linkuperrors.LinkupError {
+func ConfirmEmail(tokenString string) *linkuperrors.LinkupError {
+	// Get token
 	db := initalizers.DB
-
-	var user models.User
-	db.Where("id = ?", userID).First(&user)
-
 	token, err := GetTokenByTokenString(tokenString)
 
-	// if token is expired or not found, send new token
-	if err != nil || token.UserID != user.ID || token.ExpirationDate.After(time.Now()) {
-		token, _ := CreateToken(userID)
+	// if token not found, send new token
+	if err != nil || token == nil {
+		return linkuperrors.New("token is expired or not found", http.StatusUnauthorized)
+	}
+
+	// Get user
+	var user models.User
+	err = db.Where("id = ?", token.UserID).First(&user).Error
+	if err != nil {
+		return linkuperrors.New("user not found", http.StatusNotFound)
+	}
+
+	// Check if token is expired
+	if err != nil || token.ExpirationDate.After(time.Now()) {
+		token, _ := CreateToken(token.UserID)
 		SendTokenMail(user.Email, token.TokenString)
 		return linkuperrors.New("token is expired or not found", http.StatusUnauthorized)
 	}

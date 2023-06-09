@@ -9,6 +9,20 @@ import (
 	"github.com/marcbudd/linkup-service/services"
 )
 
+// CreatePost creates a new post.
+// @Summary Create a post
+// @Description Creates a new post
+// @Tags Posts
+// @Security ApiKeyAuth
+// @Param Authorization header string true "Bearer token"
+// @Accept json
+// @Produce json
+// @Param postCreateRequestDTO body models.PostCreateRequestDTO true "Post data"
+// @Success 201 {object} models.PostGetResponseDTO
+// @Failure 400
+// @Failure 401
+// @Failure 500
+// @Router /posts [post]
 func CreatePost(c *gin.Context) {
 	//Get content of post from body
 	var postCreateRequestDTO models.PostCreateRequestDTO
@@ -43,6 +57,19 @@ func CreatePost(c *gin.Context) {
 	c.JSON(http.StatusCreated, post)
 }
 
+// DeletePost deletes a post.
+// @Summary Delete a post
+// @Description Deletes a post
+// @Tags Posts
+// @Security ApiKeyAuth
+// @Param Authorization header string true "Bearer token"
+// @Param postID path string true "Post ID"
+// @Success 200
+// @Failure 400
+// @Failure 401
+// @Failure 403
+// @Failure 500
+// @Router /posts/{postID} [delete]
 func DeletePost(c *gin.Context) {
 
 	// Get user id of logged in user
@@ -56,7 +83,7 @@ func DeletePost(c *gin.Context) {
 
 	// Get post id from url
 	postID := c.Param("postID")
-	if postID == "0" {
+	if postID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
@@ -74,12 +101,23 @@ func DeletePost(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
-// Returns one specific post
+// GetPostByID retrieves a specific post by its ID.
+// @Summary Get a post by ID
+// @Description Retrieves a specific post by its ID
+// @Tags Posts
+// @Security ApiKeyAuth
+// @Param Authorization header string true "Bearer token"
+// @Produce json
+// @Param postID path string true "Post ID"
+// @Success 200 {object} models.PostGetResponseDTO
+// @Failure 400
+// @Failure 500
+// @Router /posts/{postID} [get]
 func GetPostByID(c *gin.Context) {
 
 	// Get post id from url
 	postID := c.Param("postID")
-	if postID == "0" {
+	if postID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
@@ -97,9 +135,64 @@ func GetPostByID(c *gin.Context) {
 	c.JSON(http.StatusOK, post)
 }
 
-// Returns all posts of the logged in user
-func GetPostsByCurrentUser(c *gin.Context) {
+// GetPostsByUserID retrieves all posts of a specific user.
+// @Summary Get posts by user ID
+// @Description Retrieves all posts of a specific user
+// @Tags Posts
+// @Produce json
+// @Param userID path string true "User ID"
+// @Param limit query int false "Limit" default(0)
+// @Param page query int false "Page" default(0)
+// @Success 200 {array} models.PostGetResponseDTO
+// @Failure 400
+// @Failure 500
+// @Router /posts/user/{userID} [get]
+func GetPostsByUserID(c *gin.Context) {
 
+	// Get query paramters
+	limit, err := strconv.ParseInt(c.Query("limit"), 10, 64)
+	if err != nil {
+		limit = 0
+	}
+	page, err := strconv.ParseInt(c.Query("page"), 10, 64)
+	if err != nil {
+		page = 0
+	}
+
+	// Get user id from url
+	userID := c.Param("userID")
+	if userID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{})
+		return
+	}
+
+	// Get posts
+	posts, serviceErr := services.GetPostsByUserID(userID, int(limit), int(page))
+	if serviceErr != nil {
+		c.JSON(serviceErr.HTTPStatusCode(), gin.H{
+			"error": serviceErr.Error(),
+		})
+		return
+	}
+
+	// Respond
+	c.JSON(http.StatusOK, posts)
+}
+
+// GetPostsForCurrentUser returns posts of all users the logged in user follows
+// @Summary Get posts for current user
+// @Description Get all posts of the users the logged in user follows (feed)
+// @Tags Posts
+// @Accept json
+// @Produce json
+// @Param userID path int true "User ID"
+// @Param limit query int false "Number of posts per page (default: 0 - all posts)"
+// @Param page query int false "Page number (default: 0 - first page)"
+// @Success 200 {array} models.PostGetResponseDTO
+// @Failure 401
+// @Failure 500
+// @Router /posts/feed [get]
+func GetPostsForCurrentUser(c *gin.Context) {
 	// Get query paramters
 	limit, err := strconv.ParseInt(c.Query("limit"), 10, 64)
 	if err != nil {
@@ -120,7 +213,7 @@ func GetPostsByCurrentUser(c *gin.Context) {
 	}
 
 	// Get posts
-	posts, serviceErr := services.GetPostsByUserID(strconv.Itoa(int(userID.(uint))), int(limit), int(page))
+	posts, serviceErr := services.GetPostsForCurrentUser(userID.(uint), int(limit), int(page))
 	if serviceErr != nil {
 		c.JSON(serviceErr.HTTPStatusCode(), gin.H{
 			"error": serviceErr.Error(),
@@ -132,72 +225,17 @@ func GetPostsByCurrentUser(c *gin.Context) {
 	c.JSON(http.StatusOK, posts)
 }
 
-// Returns all posts of a specific user
-func GetPostsByUserID(c *gin.Context) {
-
-	// Get query paramters
-	limit, err := strconv.ParseInt(c.Query("limit"), 10, 64)
-	if err != nil {
-		limit = 0
-	}
-	page, err := strconv.ParseInt(c.Query("page"), 10, 64)
-	if err != nil {
-		page = 0
-	}
-
-	// Get user id from url
-	userID := c.Param("userID")
-	if userID == "0" {
-		c.JSON(http.StatusBadRequest, gin.H{})
-		return
-	}
-
-	// Get posts
-	posts, serviceErr := services.GetPostsByUserID(userID, int(limit), int(page))
-	if serviceErr != nil {
-		c.JSON(serviceErr.HTTPStatusCode(), gin.H{
-			"error": serviceErr.Error(),
-		})
-		return
-	}
-
-	// Respond
-	c.JSON(http.StatusOK, posts)
-}
-
-// Get all posts of the users the logged in user follows (feed)
-func GetPostsForCurrentUser(c *gin.Context) {
-	// Get query paramters
-	limit, err := strconv.ParseInt(c.Query("limit"), 10, 64)
-	if err != nil {
-		limit = 0
-	}
-	page, err := strconv.ParseInt(c.Query("page"), 10, 64)
-	if err != nil {
-		page = 0
-	}
-
-	// Get user id from url
-	userID := c.Param("userID")
-	if userID == "0" {
-		c.JSON(http.StatusBadRequest, gin.H{})
-		return
-	}
-
-	// Get posts
-	posts, serviceErr := services.GetPostsForCurrentUser(userID, int(limit), int(page))
-	if serviceErr != nil {
-		c.JSON(serviceErr.HTTPStatusCode(), gin.H{
-			"error": serviceErr.Error(),
-		})
-		return
-	}
-
-	// Respond
-	c.JSON(http.StatusOK, posts)
-}
-
-// Get all posts
+// GetPosts returns all posts
+// @Summary Get all posts
+// @Description Get all posts in the system
+// @Tags Posts
+// @Produce json
+// @Param limit query int false "Number of posts per page (default: 0 - all posts)"
+// @Param page query int false "Page number (default: 0 - first page)"
+// @Success 200 {array} models.PostGetResponseDTO
+// @Failure 400
+// @Failure 500
+// @Router /posts [get]
 func GetPosts(c *gin.Context) {
 	// Get query paramters
 	limit, err := strconv.ParseInt(c.Query("limit"), 10, 64)

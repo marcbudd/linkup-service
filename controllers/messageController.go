@@ -8,6 +8,20 @@ import (
 	"github.com/marcbudd/linkup-service/services"
 )
 
+// CreateMessage creates a new message.
+// @Summary Create a new message
+// @Description Creates a new message sent by the logged-in user
+// @Tags Messages
+// @Security ApiKeyAuth
+// @Param Authorization header string true "Bearer token"
+// @Accept json
+// @Produce json
+// @Param messageCreateRequestDTO body models.MessageCreateRequestDTO true "Message data"
+// @Success 201
+// @Failure 400
+// @Failure 401
+// @Failure 500
+// @Router /messages [post]
 func CreateMessage(c *gin.Context) {
 
 	// Read body
@@ -29,7 +43,7 @@ func CreateMessage(c *gin.Context) {
 	}
 
 	// Create message
-	err := services.CreateMessage(userID.(uint), messageCreateRequestDTO)
+	message, err := services.CreateMessage(userID.(uint), messageCreateRequestDTO)
 
 	if err != nil {
 		c.JSON(err.HTTPStatusCode(), gin.H{
@@ -39,9 +53,22 @@ func CreateMessage(c *gin.Context) {
 	}
 
 	// Respond
-	c.JSON(http.StatusCreated, gin.H{})
+	c.JSON(http.StatusCreated, message)
 }
 
+// GetMessagesByChat retrieves messages between the logged-in user and a chat partner.
+// @Summary Get messages by chat
+// @Description Retrieves messages between the logged-in user and a chat partner
+// @Tags Messages
+// @Security ApiKeyAuth
+// @Param Authorization header string true "Bearer token"
+// @Param chatPartnerID path string true "ID of the chat partner"
+// @Produce json
+// @Success 200 {array} models.MessagesOfChatGetResponseDTO
+// @Failure 400
+// @Failure 401
+// @Failure 500
+// @Router /messages/{chatPartnerID} [get]
 func GetMessagesByChat(c *gin.Context) {
 
 	// Get user id of logged in user
@@ -53,9 +80,9 @@ func GetMessagesByChat(c *gin.Context) {
 		return
 	}
 
-	// Get post id from url
+	// Get id from chat partner from url
 	chatPartnerID := c.Param("chatPartnerID")
-	if chatPartnerID == "0" {
+	if chatPartnerID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
@@ -72,4 +99,39 @@ func GetMessagesByChat(c *gin.Context) {
 
 	// Respond
 	c.JSON(http.StatusOK, messages)
+}
+
+// GetChatsByUserID retrieves chats associated with the logged-in user.
+// @Summary Get chats by user ID
+// @Description Retrieves chats associated with the logged-in user
+// @Tags Chats
+// @Security ApiKeyAuth
+// @Param Authorization header string true "Bearer token"
+// @Produce json
+// @Success 200 {array} models.ChatOfUserGetResponseDTO
+// @Failure 401
+// @Failure 500
+// @Router /messages [get]
+func GetChatsByUserID(c *gin.Context) {
+	// Get user id of logged in user
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Not authorized",
+		})
+		return
+	}
+
+	// Get chats
+	chats, err := services.GetChatsByUserID(userID.(uint))
+	if err != nil {
+		c.JSON(err.HTTPStatusCode(), gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	// Respond
+	c.JSON(http.StatusOK, chats)
+
 }
