@@ -14,14 +14,14 @@ import (
 // Signup creates a new user account
 // @Summary User Signup
 // @Description Create a new user account
-// @Tags Authentication
+// @Tags Users
 // @Accept json
 // @Produce json
 // @Param userCreateDTO body models.UserCreateRequestDTO true "User information"
 // @Success 201 {object} models.UserGetResponseDTO
 // @Failure 400
 // @Failure 500
-// @Router /users/signup [post]
+// @Router /api/users/signup [post]
 func Signup(c *gin.Context) {
 
 	// Read body
@@ -64,14 +64,14 @@ func Signup(c *gin.Context) {
 // Login authenticates and logs in a user
 // @Summary User Login
 // @Description Authenticate and login a user
-// @Tags Authentication
+// @Tags Users
 // @Accept json
 // @Param userLoginRequestDTO body models.UserLoginRequestDTO true "User credentials"
 // @Success 200
 // @Failure 400
 // @Failure 401
 // @Failure 500
-// @Router /users/login [post]
+// @Router /api/users/login [post]
 func Login(c *gin.Context) {
 
 	// Read body
@@ -112,11 +112,11 @@ func Login(c *gin.Context) {
 // Validate validates the user token and checks if the user is authorized
 // @Summary Validate User Token
 // @Description Validate the user token and check if the user is authorized
-// @Tags Authentication
+// @Tags Users
 // @Security ApiKeyAuth
 // @Success 200
 // @Failure 401
-// @Router /validate [get]
+// @Router /api/users/validate [get]
 func Validate(c *gin.Context) {
 	// Get user id of logged in user
 	_, exists := c.Get("userID")
@@ -137,7 +137,7 @@ func Validate(c *gin.Context) {
 // ConfirmEmail godoc
 // @Summary Confirm Email
 // @Description Confirm the user's email address using the provided token
-// @Tags Authentication
+// @Tags Users
 // @Security ApiKeyAuth
 // @Accept json
 // @Produce json
@@ -145,7 +145,7 @@ func Validate(c *gin.Context) {
 // @Success 200
 // @Failure 401
 // @Failure 404
-// @Router /users/confirm/{token} [patch]
+// @Router /api/users/confirm/{token} [patch]
 func ConfirmEmail(c *gin.Context) {
 	// Get token from url
 	token := c.Param("token")
@@ -171,7 +171,7 @@ func ConfirmEmail(c *gin.Context) {
 // UpdatePassword updates the password of the logged-in user
 // @Summary Update Password
 // @Description Update the password of the logged-in user
-// @Tags User
+// @Tags Users
 // @Security ApiKeyAuth
 // @Accept json
 // @Param password body models.UserUpdatePasswortRequestDTO true "New password"
@@ -180,7 +180,7 @@ func ConfirmEmail(c *gin.Context) {
 // @Failure 401
 // @Failure 404
 // @Failure 500
-// @Router /users/updatePassword [patch]
+// @Router /api/users/updatePassword [patch]
 func UpdatePassword(c *gin.Context) {
 
 	// Read body
@@ -227,7 +227,7 @@ func UpdatePassword(c *gin.Context) {
 // @Failure 400
 // @Failure 401
 // @Failure 404
-// @Router /users/{userID} [get]
+// @Router /api/users/{userID} [get]
 func GetUserByID(c *gin.Context) {
 
 	// Get parameter from url
@@ -261,7 +261,7 @@ func GetUserByID(c *gin.Context) {
 // @Param page query int false "Page number"
 // @Success 200 {array} models.UserGetResponseDTO
 // @Failure 500
-// @Router /users [get]
+// @Router /api/users [get]
 func GetUsers(c *gin.Context) {
 
 	// Get query paramters
@@ -302,7 +302,7 @@ func GetUsers(c *gin.Context) {
 // @Failure 401
 // @Failure 409
 // @Failure 500
-// @Router /users [patch]
+// @Router /api/users [patch]
 func UpdateUser(c *gin.Context) {
 	// Read body
 	var updateUpdateDTO models.UserUpdateRequestDTO
@@ -347,7 +347,7 @@ func UpdateUser(c *gin.Context) {
 // @Failure 400
 // @Failure 404
 // @Failure 500
-// @Router /users/forgotPassword [patch]
+// @Router /api/users/forgotPassword [patch]
 func UpdatePasswordForgotten(c *gin.Context) {
 	// Read body
 	var updatePasswordForgottenDTO models.UserUpdatePasswordForgottenRequestDTO

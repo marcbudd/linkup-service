@@ -18,7 +18,7 @@ import (
 // @Failure 400
 // @Failure 401
 // @Failure 500
-// @Router /likes/{postID} [post]
+// @Router /api/likes/{postID} [post]
 func CreateLike(c *gin.Context) {
 
 	// Get post id from url
@@ -63,7 +63,7 @@ func CreateLike(c *gin.Context) {
 // @Failure 400
 // @Failure 401
 // @Failure 500
-// @Router /likes/{postID} [delete]
+// @Router /api/likes/{postID} [delete]
 func DeleteLike(c *gin.Context) {
 
 	// Get post id from url
@@ -103,7 +103,7 @@ func DeleteLike(c *gin.Context) {
 // @Success 200 {array} models.LikeGetResponseDTO
 // @Failure 400
 // @Failure 500
-// @Router /likes/{postID} [get]
+// @Router /api/likes/{postID} [get]
 func GetLikesByPostId(c *gin.Context) {
 
 	// Get post id from url

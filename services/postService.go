@@ -26,6 +26,7 @@ func CreatePost(userID uint, req models.PostCreateRequestDTO) (*models.PostGetRe
 		return nil, linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
 	}
 
+	db.Preload("User").First(&post)
 	return post.ConvertPostToResponseDTO(), nil
 
 }
@@ -79,6 +80,7 @@ func GetPostsByUserID(userID string, limit int, page int) ([]*models.PostGetResp
 
 	var dtos []*models.PostGetResponseDTO
 	for _, post := range posts {
+		db.Preload("User").First(&post)
 		dto := *post.ConvertPostToResponseDTO()
 		dtos = append(dtos, &dto)
 	}
@@ -97,6 +99,7 @@ func GetPostByID(postID string) (*models.PostGetResponseDTO, *linkuperrors.Linku
 	}
 
 	// Create response dto
+	db.Preload("User").First(&post)
 	responsePost := *post.ConvertPostToResponseDTO()
 
 	return &responsePost, nil
@@ -133,6 +136,7 @@ func GetPostsForCurrentUser(userID uint, limit int, page int) ([]*models.PostGet
 
 	var dtos []*models.PostGetResponseDTO
 	for _, post := range posts {
+		db.Preload("User").First(&post)
 		dto := *post.ConvertPostToResponseDTO()
 		dtos = append(dtos, &dto)
 	}
@@ -168,6 +172,8 @@ func GetAllPosts(limit int, page int) ([]*models.PostGetResponseDTO, *linkuperro
 	// Create response dtos
 	var dtos []*models.PostGetResponseDTO
 	for _, post := range posts {
+
+		db.Preload("User").First(&post)
 		dto := *post.ConvertPostToResponseDTO()
 		dtos = append(dtos, &dto)
 	}

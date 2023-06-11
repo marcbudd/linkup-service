@@ -21,7 +21,7 @@ import (
 // @Failure 400
 // @Failure 401
 // @Failure 500
-// @Router /comments/{postID} [post]
+// @Router /api/comments/{postID} [post]
 func CreateComment(c *gin.Context) {
 
 	//Read body
@@ -69,7 +69,7 @@ func CreateComment(c *gin.Context) {
 // @Failure 401
 // @Failure 403
 // @Failure 500
-// @Router /comments/{commentID} [delete]
+// @Router /api/comments/{commentID} [delete]
 func DeleteComment(c *gin.Context) {
 
 	// Get user id of logged in user
@@ -112,7 +112,7 @@ func DeleteComment(c *gin.Context) {
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /comments/posts/{postID} [get]
+// @Router /api/comments/posts/{postID} [get]
 func GetCommentsByPostID(c *gin.Context) {
 
 	// Get post id from url

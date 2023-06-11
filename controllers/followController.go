@@ -18,7 +18,7 @@ import (
 // @Failure 400
 // @Failure 401
 // @Failure 500
-// @Router /follows/{followedUserID} [post]
+// @Router /api/follows/{followedUserID} [post]
 func CreateFollow(c *gin.Context) {
 
 	// Get user id from url
@@ -61,7 +61,7 @@ func CreateFollow(c *gin.Context) {
 // @Failure 400
 // @Failure 401
 // @Failure 500
-// @Router /follows/{followedUserID} [delete]
+// @Router /api/follows/{followedUserID} [delete]
 func DeleteFollow(c *gin.Context) {
 
 	// Get user id from url
@@ -104,7 +104,7 @@ func DeleteFollow(c *gin.Context) {
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /follows/{userID}/followings [get]
+// @Router /api/follows/{userID}/followings [get]
 func GetFollowingsByUserID(c *gin.Context) {
 
 	// Get user id from url
@@ -139,7 +139,7 @@ func GetFollowingsByUserID(c *gin.Context) {
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /follows/{userID} [get]
+// @Router /api/follows/{userID} [get]
 func GetFollowersByUserID(c *gin.Context) {
 
 	// Get user id from url

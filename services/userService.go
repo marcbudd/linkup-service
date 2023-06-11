@@ -61,6 +61,7 @@ func CreateUser(req models.UserCreateRequestDTO) (*models.UserGetResponseDTO, *l
 	}
 
 	return user.ConvertUserToResponseDTO(), nil
+	// return nil, nil
 }
 
 func LoginUser(req models.UserLoginRequestDTO) (*models.User, *linkuperrors.LinkupError) {
@@ -162,8 +163,8 @@ func GetUserByID(id string) (*models.UserGetResponseDTO, *linkuperrors.LinkupErr
 		return nil, linkuperrors.New("user not found", http.StatusNotFound)
 	}
 
-	var responseUser = *user.ConvertUserToResponseDTO()
-	return &responseUser, nil
+	var responseUser = user.ConvertUserToResponseDTO()
+	return responseUser, nil
 }
 
 func GetUsers(query string, page int, limit int) (*[]models.UserGetResponseDTO, *linkuperrors.LinkupError) {

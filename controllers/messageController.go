@@ -21,7 +21,7 @@ import (
 // @Failure 400
 // @Failure 401
 // @Failure 500
-// @Router /messages [post]
+// @Router /api/messages [post]
 func CreateMessage(c *gin.Context) {
 
 	// Read body
@@ -68,7 +68,7 @@ func CreateMessage(c *gin.Context) {
 // @Failure 400
 // @Failure 401
 // @Failure 500
-// @Router /messages/{chatPartnerID} [get]
+// @Router /api/messages/{chatPartnerID} [get]
 func GetMessagesByChat(c *gin.Context) {
 
 	// Get user id of logged in user
@@ -104,14 +104,14 @@ func GetMessagesByChat(c *gin.Context) {
 // GetChatsByUserID retrieves chats associated with the logged-in user.
 // @Summary Get chats by user ID
 // @Description Retrieves chats associated with the logged-in user
-// @Tags Chats
+// @Tags Messages
 // @Security ApiKeyAuth
 // @Param Authorization header string true "Bearer token"
 // @Produce json
 // @Success 200 {array} models.ChatOfUserGetResponseDTO
 // @Failure 401
 // @Failure 500
-// @Router /messages [get]
+// @Router /api/messages [get]
 func GetChatsByUserID(c *gin.Context) {
 	// Get user id of logged in user
 	userID, exists := c.Get("userID")

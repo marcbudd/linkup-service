@@ -16,7 +16,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/comments/posts/{postID}": {
+        "/api/comments/posts/{postID}": {
             "get": {
                 "security": [
                     {
@@ -57,7 +57,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/comments/{commentID}": {
+        "/api/comments/{commentID}": {
             "delete": {
                 "security": [
                     {
@@ -104,7 +104,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/comments/{postID}": {
+        "/api/comments/{postID}": {
             "post": {
                 "security": [
                     {
@@ -159,7 +159,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/follows/{followedUserID}": {
+        "/api/follows/{followedUserID}": {
             "post": {
                 "security": [
                     {
@@ -245,7 +245,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/follows/{userID}": {
+        "/api/follows/{userID}": {
             "get": {
                 "security": [
                     {
@@ -289,7 +289,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/follows/{userID}/followings": {
+        "/api/follows/{userID}/followings": {
             "get": {
                 "security": [
                     {
@@ -333,7 +333,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/likes/{postID}": {
+        "/api/likes/{postID}": {
             "get": {
                 "description": "Retrieves the likes for the post with the specified postID",
                 "tags": [
@@ -452,7 +452,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/messages": {
+        "/api/messages": {
             "get": {
                 "security": [
                     {
@@ -464,7 +464,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Chats"
+                    "Messages"
                 ],
                 "summary": "Get chats by user ID",
                 "parameters": [
@@ -545,7 +545,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/messages/{chatPartnerID}": {
+        "/api/messages/{chatPartnerID}": {
             "get": {
                 "security": [
                     {
@@ -598,7 +598,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/posts": {
+        "/api/posts": {
             "get": {
                 "description": "Get all posts in the system",
                 "produces": [
@@ -659,13 +659,6 @@ const docTemplate = `{
                 "summary": "Create a post",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
                         "description": "Post data",
                         "name": "postCreateRequestDTO",
                         "in": "body",
@@ -694,7 +687,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/posts/feed": {
+        "/api/posts/feed": {
             "get": {
                 "description": "Get all posts of the users the logged in user follows (feed)",
                 "consumes": [
@@ -747,7 +740,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/posts/user/{userID}": {
+        "/api/posts/user/{userID}": {
             "get": {
                 "description": "Retrieves all posts of a specific user",
                 "produces": [
@@ -799,7 +792,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/posts/{postID}": {
+        "/api/posts/{postID}": {
             "get": {
                 "security": [
                     {
@@ -891,7 +884,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users": {
+        "/api/users": {
             "get": {
                 "description": "Get a list of users based on query parameters",
                 "consumes": [
@@ -990,7 +983,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/confirm/{token}": {
+        "/api/users/confirm/{token}": {
             "patch": {
                 "security": [
                     {
@@ -1005,7 +998,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Authentication"
+                    "Users"
                 ],
                 "summary": "Confirm Email",
                 "parameters": [
@@ -1030,7 +1023,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/forgotPassword": {
+        "/api/users/forgotPassword": {
             "patch": {
                 "description": "Reset the forgotten password",
                 "consumes": [
@@ -1067,14 +1060,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/login": {
+        "/api/users/login": {
             "post": {
                 "description": "Authenticate and login a user",
                 "consumes": [
                     "application/json"
                 ],
                 "tags": [
-                    "Authentication"
+                    "Users"
                 ],
                 "summary": "User Login",
                 "parameters": [
@@ -1104,7 +1097,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/signup": {
+        "/api/users/signup": {
             "post": {
                 "description": "Create a new user account",
                 "consumes": [
@@ -1114,7 +1107,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Authentication"
+                    "Users"
                 ],
                 "summary": "User Signup",
                 "parameters": [
@@ -1144,7 +1137,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/updatePassword": {
+        "/api/users/updatePassword": {
             "patch": {
                 "security": [
                     {
@@ -1156,7 +1149,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "Users"
                 ],
                 "summary": "Update Password",
                 "parameters": [
@@ -1189,7 +1182,29 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{userID}": {
+        "/api/users/validate": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Validate the user token and check if the user is authorized",
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Validate User Token",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/api/users/{userID}": {
             "get": {
                 "description": "Get a user by their ID",
                 "produces": [
@@ -1223,28 +1238,6 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Not Found"
-                    }
-                }
-            }
-        },
-        "/validate": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Validate the user token and check if the user is authorized",
-                "tags": [
-                    "Authentication"
-                ],
-                "summary": "Validate User Token",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
                     }
                 }
             }

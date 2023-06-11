@@ -14,7 +14,6 @@ import (
 // @Description Creates a new post
 // @Tags Posts
 // @Security ApiKeyAuth
-// @Param Authorization header string true "Bearer token"
 // @Accept json
 // @Produce json
 // @Param postCreateRequestDTO body models.PostCreateRequestDTO true "Post data"
@@ -22,7 +21,7 @@ import (
 // @Failure 400
 // @Failure 401
 // @Failure 500
-// @Router /posts [post]
+// @Router /api/posts [post]
 func CreatePost(c *gin.Context) {
 	//Get content of post from body
 	var postCreateRequestDTO models.PostCreateRequestDTO
@@ -69,7 +68,7 @@ func CreatePost(c *gin.Context) {
 // @Failure 401
 // @Failure 403
 // @Failure 500
-// @Router /posts/{postID} [delete]
+// @Router /api/posts/{postID} [delete]
 func DeletePost(c *gin.Context) {
 
 	// Get user id of logged in user
@@ -112,7 +111,7 @@ func DeletePost(c *gin.Context) {
 // @Success 200 {object} models.PostGetResponseDTO
 // @Failure 400
 // @Failure 500
-// @Router /posts/{postID} [get]
+// @Router /api/posts/{postID} [get]
 func GetPostByID(c *gin.Context) {
 
 	// Get post id from url
@@ -146,7 +145,7 @@ func GetPostByID(c *gin.Context) {
 // @Success 200 {array} models.PostGetResponseDTO
 // @Failure 400
 // @Failure 500
-// @Router /posts/user/{userID} [get]
+// @Router /api/posts/user/{userID} [get]
 func GetPostsByUserID(c *gin.Context) {
 
 	// Get query paramters
@@ -191,7 +190,7 @@ func GetPostsByUserID(c *gin.Context) {
 // @Success 200 {array} models.PostGetResponseDTO
 // @Failure 401
 // @Failure 500
-// @Router /posts/feed [get]
+// @Router /api/posts/feed [get]
 func GetPostsForCurrentUser(c *gin.Context) {
 	// Get query paramters
 	limit, err := strconv.ParseInt(c.Query("limit"), 10, 64)
@@ -235,7 +234,7 @@ func GetPostsForCurrentUser(c *gin.Context) {
 // @Success 200 {array} models.PostGetResponseDTO
 // @Failure 400
 // @Failure 500
-// @Router /posts [get]
+// @Router /api/posts [get]
 func GetPosts(c *gin.Context) {
 	// Get query paramters
 	limit, err := strconv.ParseInt(c.Query("limit"), 10, 64)

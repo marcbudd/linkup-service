@@ -164,7 +164,7 @@ definitions:
 info:
   contact: {}
 paths:
-  /comments/{commentID}:
+  /api/comments/{commentID}:
     delete:
       description: Deletes a comment with the specified commentID
       parameters:
@@ -194,7 +194,7 @@ paths:
       summary: Delete a comment
       tags:
       - Comments
-  /comments/{postID}:
+  /api/comments/{postID}:
     post:
       consumes:
       - application/json
@@ -229,7 +229,7 @@ paths:
       summary: Create a comment
       tags:
       - Comments
-  /comments/posts/{postID}:
+  /api/comments/posts/{postID}:
     get:
       description: Retrieves comments associated with the specified postID
       parameters:
@@ -255,7 +255,7 @@ paths:
       summary: Get comments by post ID
       tags:
       - Comments
-  /follows/{followedUserID}:
+  /api/follows/{followedUserID}:
     delete:
       description: Deletes the follow relationship between the logged-in user and
         the user with the specified followedUserID
@@ -312,7 +312,7 @@ paths:
       summary: Create a follow relationship
       tags:
       - Follows
-  /follows/{userID}:
+  /api/follows/{userID}:
     get:
       description: Retrieves the list of followers for the user with the specified
         userID
@@ -341,7 +341,7 @@ paths:
       summary: Get followers of a user
       tags:
       - Follows
-  /follows/{userID}/followings:
+  /api/follows/{userID}/followings:
     get:
       description: Retrieves the list of followings for the user with the specified
         userID
@@ -370,7 +370,7 @@ paths:
       summary: Get followings of a user
       tags:
       - Follows
-  /likes/{postID}:
+  /api/likes/{postID}:
     delete:
       description: Deletes the like for the post with the specified postID
       parameters:
@@ -447,7 +447,7 @@ paths:
       summary: Create a like for a post
       tags:
       - Likes
-  /messages:
+  /api/messages:
     get:
       description: Retrieves chats associated with the logged-in user
       parameters:
@@ -473,7 +473,7 @@ paths:
       - ApiKeyAuth: []
       summary: Get chats by user ID
       tags:
-      - Chats
+      - Messages
     post:
       consumes:
       - application/json
@@ -506,7 +506,7 @@ paths:
       summary: Create a new message
       tags:
       - Messages
-  /messages/{chatPartnerID}:
+  /api/messages/{chatPartnerID}:
     get:
       description: Retrieves messages between the logged-in user and a chat partner
       parameters:
@@ -540,7 +540,7 @@ paths:
       summary: Get messages by chat
       tags:
       - Messages
-  /posts:
+  /api/posts:
     get:
       description: Get all posts in the system
       parameters:
@@ -573,11 +573,6 @@ paths:
       - application/json
       description: Creates a new post
       parameters:
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: Post data
         in: body
         name: postCreateRequestDTO
@@ -602,7 +597,7 @@ paths:
       summary: Create a post
       tags:
       - Posts
-  /posts/{postID}:
+  /api/posts/{postID}:
     delete:
       description: Deletes a post
       parameters:
@@ -661,7 +656,7 @@ paths:
       summary: Get a post by ID
       tags:
       - Posts
-  /posts/feed:
+  /api/posts/feed:
     get:
       consumes:
       - application/json
@@ -696,7 +691,7 @@ paths:
       summary: Get posts for current user
       tags:
       - Posts
-  /posts/user/{userID}:
+  /api/posts/user/{userID}:
     get:
       description: Retrieves all posts of a specific user
       parameters:
@@ -731,7 +726,7 @@ paths:
       summary: Get posts by user ID
       tags:
       - Posts
-  /users:
+  /api/users:
     get:
       consumes:
       - application/json
@@ -795,7 +790,7 @@ paths:
       summary: Update user
       tags:
       - Users
-  /users/{userID}:
+  /api/users/{userID}:
     get:
       description: Get a user by their ID
       parameters:
@@ -820,7 +815,7 @@ paths:
       summary: Get User by ID
       tags:
       - Users
-  /users/confirm/{token}:
+  /api/users/confirm/{token}:
     patch:
       consumes:
       - application/json
@@ -844,8 +839,8 @@ paths:
       - ApiKeyAuth: []
       summary: Confirm Email
       tags:
-      - Authentication
-  /users/forgotPassword:
+      - Users
+  /api/users/forgotPassword:
     patch:
       consumes:
       - application/json
@@ -869,7 +864,7 @@ paths:
       summary: Reset forgotten password
       tags:
       - Users
-  /users/login:
+  /api/users/login:
     post:
       consumes:
       - application/json
@@ -892,8 +887,8 @@ paths:
           description: Internal Server Error
       summary: User Login
       tags:
-      - Authentication
-  /users/signup:
+      - Users
+  /api/users/signup:
     post:
       consumes:
       - application/json
@@ -918,8 +913,8 @@ paths:
           description: Internal Server Error
       summary: User Signup
       tags:
-      - Authentication
-  /users/updatePassword:
+      - Users
+  /api/users/updatePassword:
     patch:
       consumes:
       - application/json
@@ -946,8 +941,8 @@ paths:
       - ApiKeyAuth: []
       summary: Update Password
       tags:
-      - User
-  /validate:
+      - Users
+  /api/users/validate:
     get:
       description: Validate the user token and check if the user is authorized
       responses:
@@ -959,5 +954,5 @@ paths:
       - ApiKeyAuth: []
       summary: Validate User Token
       tags:
-      - Authentication
+      - Users
 swagger: "2.0"
