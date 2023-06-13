@@ -31,13 +31,6 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
                         "description": "Post ID",
                         "name": "postID",
                         "in": "path",
@@ -70,13 +63,6 @@ const docTemplate = `{
                 ],
                 "summary": "Delete a comment",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "type": "string",
                         "description": "Comment ID",
@@ -124,13 +110,6 @@ const docTemplate = `{
                 "summary": "Create a comment",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
                         "description": "Comment creation data",
                         "name": "commentCreateRequestDTO",
                         "in": "body",
@@ -174,13 +153,6 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
                         "description": "Followed User ID",
                         "name": "followedUserID",
                         "in": "path",
@@ -214,13 +186,6 @@ const docTemplate = `{
                 ],
                 "summary": "Delete a follow relationship",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "type": "string",
                         "description": "Followed User ID",
@@ -263,13 +228,6 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
                         "description": "User ID",
                         "name": "userID",
                         "in": "path",
@@ -305,13 +263,6 @@ const docTemplate = `{
                 ],
                 "summary": "Get followings of a user",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "type": "string",
                         "description": "User ID",
@@ -381,13 +332,6 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
                         "description": "Post ID",
                         "name": "postID",
                         "in": "path",
@@ -421,13 +365,6 @@ const docTemplate = `{
                 ],
                 "summary": "Delete a like for a post",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "type": "string",
                         "description": "Post ID",
@@ -467,15 +404,6 @@ const docTemplate = `{
                     "Messages"
                 ],
                 "summary": "Get chats by user ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -512,13 +440,6 @@ const docTemplate = `{
                 ],
                 "summary": "Create a new message",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "description": "Message data",
                         "name": "messageCreateRequestDTO",
@@ -561,13 +482,6 @@ const docTemplate = `{
                 ],
                 "summary": "Get messages by chat",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "type": "string",
                         "description": "ID of the chat partner",
@@ -810,13 +724,6 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
                         "description": "Post ID",
                         "name": "postID",
                         "in": "path",
@@ -850,13 +757,6 @@ const docTemplate = `{
                 ],
                 "summary": "Delete a post",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "type": "string",
                         "description": "Post ID",

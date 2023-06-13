@@ -168,11 +168,6 @@ paths:
     delete:
       description: Deletes a comment with the specified commentID
       parameters:
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: Comment ID
         in: path
         name: commentID
@@ -200,11 +195,6 @@ paths:
       - application/json
       description: Create a new comment
       parameters:
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: Comment creation data
         in: body
         name: commentCreateRequestDTO
@@ -233,11 +223,6 @@ paths:
     get:
       description: Retrieves comments associated with the specified postID
       parameters:
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: Post ID
         in: path
         name: postID
@@ -260,11 +245,6 @@ paths:
       description: Deletes the follow relationship between the logged-in user and
         the user with the specified followedUserID
       parameters:
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: Followed User ID
         in: path
         name: followedUserID
@@ -288,11 +268,6 @@ paths:
       description: Creates a follow relationship between the logged-in user and the
         user with the specified followedUserID
       parameters:
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: Followed User ID
         in: path
         name: followedUserID
@@ -317,11 +292,6 @@ paths:
       description: Retrieves the list of followers for the user with the specified
         userID
       parameters:
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: User ID
         in: path
         name: userID
@@ -346,11 +316,6 @@ paths:
       description: Retrieves the list of followings for the user with the specified
         userID
       parameters:
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: User ID
         in: path
         name: userID
@@ -374,11 +339,6 @@ paths:
     delete:
       description: Deletes the like for the post with the specified postID
       parameters:
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: Post ID
         in: path
         name: postID
@@ -423,11 +383,6 @@ paths:
     post:
       description: Creates a like for the post with the specified postID
       parameters:
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: Post ID
         in: path
         name: postID
@@ -450,12 +405,6 @@ paths:
   /api/messages:
     get:
       description: Retrieves chats associated with the logged-in user
-      parameters:
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -479,11 +428,6 @@ paths:
       - application/json
       description: Creates a new message sent by the logged-in user
       parameters:
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: Message data
         in: body
         name: messageCreateRequestDTO
@@ -510,11 +454,6 @@ paths:
     get:
       description: Retrieves messages between the logged-in user and a chat partner
       parameters:
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: ID of the chat partner
         in: path
         name: chatPartnerID
@@ -601,11 +540,6 @@ paths:
     delete:
       description: Deletes a post
       parameters:
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: Post ID
         in: path
         name: postID
@@ -630,11 +564,6 @@ paths:
     get:
       description: Retrieves a specific post by its ID
       parameters:
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: Post ID
         in: path
         name: postID
