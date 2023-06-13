@@ -19,12 +19,11 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      - name: Build and tag Docker image
-        run: |
-          docker build -t dockerhub-marcbudd/linkup-service:latest .
-          docker tag dockerhub-marcbudd/linkup-service:latest dockerhub-marcbudd/linkup-service:${{ github.sha }}
-
-      - name: Push Docker image to Docker Hub
-        run: |
-          docker push dockerhub-marcbudd/linkup-service:latest
-          docker push dockerhub-marcbudd/linkup-service:${{ github.sha }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: |
+            marcbudd/linkup-service:${{ github.sha }}
+            marcbudd/linkup-service:latest

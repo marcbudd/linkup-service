@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/marcbudd/linkup-service/controllers"
 	"github.com/marcbudd/linkup-service/middleware"
@@ -17,6 +18,13 @@ var swagger embed.FS
 
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
+
+	// Set CORS
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"*"}
+	config.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE"}
+	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type"}
+	r.Use(cors.New(config))
 
 	// Set trusted proxies
 	r.SetTrustedProxies([]string{os.Getenv("PROXY_HOST")})

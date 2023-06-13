@@ -28,6 +28,8 @@ EMAIL_HOST=
 EMAIL_PORT=
 EMAIL_ADDRESS=
 EMAIL_PASSWORD=
+
+PROXY_HOST=
 ```
 
 Stelle sicher, dass du eine PostgreSQL-Datenbank und einen Email-Server mit den entsprechenden Credentials eingerichtet hast und die Werte in der `.env`-Datei aktualisierst, um eine erfolgreiche Verbindung herzustellen.
