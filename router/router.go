@@ -3,6 +3,7 @@ package router
 import (
 	"embed"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/marcbudd/linkup-service/controllers"
@@ -17,9 +18,17 @@ var swagger embed.FS
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
 
+	// Set trusted proxies
+	r.SetTrustedProxies([]string{os.Getenv("PROXY_HOST")})
+
 	// Swagger
 	r.StaticFS("/swaggerio", http.FS(swagger))
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	// Redirect from "/swagger" to "/swagger/index.html"
+	r.GET("/swagger", func(c *gin.Context) {
+		c.Redirect(http.StatusMovedPermanently, "/swagger/index.html")
+	})
 
 	// API Routes
 	api := r.Group("/api")
