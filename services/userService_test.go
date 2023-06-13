@@ -73,7 +73,7 @@ func TestCreateUser_InvalidPassword(t *testing.T) {
 
 	// Assert
 	assert.Nil(t, user)
-	assert.EqualError(t, err, "password is not valid")
+	assert.EqualError(t, err, "password is not strong enough")
 }
 
 // func TestCreateUser_DuplicateEmail(t *testing.T) {
