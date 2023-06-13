@@ -12,7 +12,6 @@ import (
 // @Description Creates a like for the post with the specified postID
 // @Tags Likes
 // @Security ApiKeyAuth
-// @Param Authorization header string true "Bearer token"
 // @Param postID path string true "Post ID"
 // @Success 201
 // @Failure 400
@@ -57,7 +56,6 @@ func CreateLike(c *gin.Context) {
 // @Description Deletes the like for the post with the specified postID
 // @Tags Likes
 // @Security ApiKeyAuth
-// @Param Authorization header string true "Bearer token"
 // @Param postID path string true "Post ID"
 // @Success 200
 // @Failure 400

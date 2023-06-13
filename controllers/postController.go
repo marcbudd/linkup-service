@@ -61,7 +61,6 @@ func CreatePost(c *gin.Context) {
 // @Description Deletes a post
 // @Tags Posts
 // @Security ApiKeyAuth
-// @Param Authorization header string true "Bearer token"
 // @Param postID path string true "Post ID"
 // @Success 200
 // @Failure 400
@@ -105,7 +104,6 @@ func DeletePost(c *gin.Context) {
 // @Description Retrieves a specific post by its ID
 // @Tags Posts
 // @Security ApiKeyAuth
-// @Param Authorization header string true "Bearer token"
 // @Produce json
 // @Param postID path string true "Post ID"
 // @Success 200 {object} models.PostGetResponseDTO

@@ -12,7 +12,6 @@ import (
 // @Description Creates a follow relationship between the logged-in user and the user with the specified followedUserID
 // @Tags Follows
 // @Security ApiKeyAuth
-// @Param Authorization header string true "Bearer token"
 // @Param followedUserID path string true "Followed User ID"
 // @Success 201
 // @Failure 400
@@ -55,7 +54,6 @@ func CreateFollow(c *gin.Context) {
 // @Description Deletes the follow relationship between the logged-in user and the user with the specified followedUserID
 // @Tags Follows
 // @Security ApiKeyAuth
-// @Param Authorization header string true "Bearer token"
 // @Param followedUserID path string true "Followed User ID"
 // @Success 200
 // @Failure 400
@@ -99,7 +97,6 @@ func DeleteFollow(c *gin.Context) {
 // @Tags Follows
 // @Produce json
 // @Security ApiKeyAuth
-// @Param Authorization header string true "Bearer token"
 // @Param userID path string true "User ID"
 // @Success 200
 // @Failure 400
@@ -134,7 +131,6 @@ func GetFollowingsByUserID(c *gin.Context) {
 // @Tags Follows
 // @Produce json
 // @Security ApiKeyAuth
-// @Param Authorization header string true "Bearer token"
 // @Param userID path string true "User ID"
 // @Success 200
 // @Failure 400
