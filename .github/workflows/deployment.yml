@@ -1,4 +1,4 @@
-name: Push to Docker Hub
+name: Deployment
 
 on:
   push:
@@ -39,7 +39,7 @@ jobs:
           host: ${{ secrets.HOST }}
           port: ${{ secrets.PORT }}
           username: ${{ secrets.USER }}
-          key: ${{ secrets.PASSWORD }}
+          password: ${{ secrets.PASSWORD }}
           script: |
             cd linkup-service
             kill $(lsof -t -i:3000)
