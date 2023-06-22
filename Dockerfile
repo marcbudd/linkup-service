@@ -2,9 +2,6 @@ FROM golang:1.18.0
 
 WORKDIR /usr/src/app
 
-# Install air for hot-reloading
-RUN go install github.com/cosmtrek/air@latest
-
 # Install Node.js for Swagger UI setup
 RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get install -y nodejs

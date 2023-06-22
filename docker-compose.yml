@@ -9,13 +9,15 @@ services:
       - 3000:3000
     volumes:
       - .:/usr/src/app
-    command: air main.go -b 0.0.0.0
+    # command: air main.go -b 0.0.0.0
+    command: go run main.go
   db:
     image: postgres:alpine
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_DB=${DB_PORT}
     ports:
       - 5432:5432
     volumes:
