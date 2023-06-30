@@ -15,9 +15,13 @@ type User struct {
 }
 
 type UserCreateRequestDTO struct {
-	Email    string `json:"email"`
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Email     string    `json:"email"`
+	Username  string    `json:"username"`
+	Password  string    `json:"password"`
+	BirthDate time.Time `gorm:"column:birth_date"`
+	Name      string    `gorm:"column:name"`
+	Bio       string    `gorm:"column:bio;size:1024"`
+	Image     *string   `gorm:"column:image"`
 }
 
 // function to convert user to response dto
@@ -27,6 +31,10 @@ func ConvertRequestDTOToUser(req UserCreateRequestDTO) *User {
 		Username:     req.Username,
 		Email:        req.Email,
 		PasswordHash: req.Password,
+		BirthDate:    req.BirthDate,
+		Name:         req.Name,
+		Bio:          req.Bio,
+		Image:        req.Image,
 	}
 }
 
@@ -38,12 +46,6 @@ type UserLoginRequestDTO struct {
 type UserUpdatePasswortRequestDTO struct {
 	OldPassword string `json:"oldPassword"`
 	NewPassword string `json:"newPassword"`
-}
-
-type UsersGetRequestDTO struct {
-	Query string `form:"query"`
-	Page  int    `form:"query"`
-	Limit int    `form:"limit"`
 }
 
 type UserUpdateRequestDTO struct {
@@ -87,5 +89,31 @@ func (u *User) ConvertUserToResponseDTO() *UserGetResponseDTO {
 		Name:      u.Name,
 		Bio:       u.Bio,
 		Image:     u.Image,
+	}
+}
+
+type UserDetailGetResponseDTO struct {
+	ID              uint      `json:"id"`
+	Username        string    `json:"username"`
+	BirthDate       time.Time `json:"birthDate"`
+	Name            string    `json:"name"`
+	Bio             string    `json:"bio"`
+	Image           *string   `json:"image"`
+	NumberFollowers int64     `json:"numberFollowers"`
+	NumberFollowing int64     `json:"numberFollowing"`
+}
+
+// function to convert user to response dto
+// can be called everywhere, changes can be made in one place
+func (u *User) ConvertUserToDetailResponseDTO(numberFollowers int64, numerFollowing int64) *UserDetailGetResponseDTO {
+	return &UserDetailGetResponseDTO{
+		ID:              u.ID,
+		Username:        u.Username,
+		BirthDate:       u.BirthDate,
+		Name:            u.Name,
+		Bio:             u.Bio,
+		Image:           u.Image,
+		NumberFollowers: numberFollowers,
+		NumberFollowing: numerFollowing,
 	}
 }

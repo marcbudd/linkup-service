@@ -26,8 +26,12 @@ func CreatePost(userID uint, req models.PostCreateRequestDTO) (*models.PostGetRe
 		return nil, linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
 	}
 
-	db.Preload("User").First(&post)
-	return post.ConvertPostToResponseDTO(), nil
+	var numberLikes int64
+	var numberComments int64
+	db.Model(&models.Like{}).Where("post_id = ?", post.ID).Count(&numberLikes)
+	db.Model(&models.Comment{}).Where("post_id = ?", post.ID).Count(&numberComments)
+
+	return post.ConvertPostToResponseDTO(numberLikes, numberComments), nil
 
 }
 
@@ -81,7 +85,11 @@ func GetPostsByUserID(userID string, limit int, page int) ([]*models.PostGetResp
 	var dtos []*models.PostGetResponseDTO
 	for _, post := range posts {
 		db.Preload("User").First(&post)
-		dto := *post.ConvertPostToResponseDTO()
+		var numberLikes int64
+		var numberComments int64
+		db.Model(&models.Like{}).Where("post_id = ?", post.ID).Count(&numberLikes)
+		db.Model(&models.Comment{}).Where("post_id = ?", post.ID).Count(&numberComments)
+		dto := *post.ConvertPostToResponseDTO(numberLikes, numberComments)
 		dtos = append(dtos, &dto)
 	}
 
@@ -100,7 +108,11 @@ func GetPostByID(postID string) (*models.PostGetResponseDTO, *linkuperrors.Linku
 
 	// Create response dto
 	db.Preload("User").First(&post)
-	responsePost := *post.ConvertPostToResponseDTO()
+	var numberLikes int64
+	var numberComments int64
+	db.Model(&models.Like{}).Where("post_id = ?", post.ID).Count(&numberLikes)
+	db.Model(&models.Comment{}).Where("post_id = ?", post.ID).Count(&numberComments)
+	responsePost := *post.ConvertPostToResponseDTO(numberLikes, numberComments)
 
 	return &responsePost, nil
 }
@@ -137,7 +149,11 @@ func GetPostsForCurrentUser(userID uint, limit int, page int) ([]*models.PostGet
 	var dtos []*models.PostGetResponseDTO
 	for _, post := range posts {
 		db.Preload("User").First(&post)
-		dto := *post.ConvertPostToResponseDTO()
+		var numberLikes int64
+		var numberComments int64
+		db.Model(&models.Like{}).Where("post_id = ?", post.ID).Count(&numberLikes)
+		db.Model(&models.Comment{}).Where("post_id = ?", post.ID).Count(&numberComments)
+		dto := *post.ConvertPostToResponseDTO(numberLikes, numberComments)
 		dtos = append(dtos, &dto)
 	}
 
@@ -172,9 +188,12 @@ func GetAllPosts(limit int, page int) ([]*models.PostGetResponseDTO, *linkuperro
 	// Create response dtos
 	var dtos []*models.PostGetResponseDTO
 	for _, post := range posts {
-
 		db.Preload("User").First(&post)
-		dto := *post.ConvertPostToResponseDTO()
+		var numberLikes int64
+		var numberComments int64
+		db.Model(&models.Like{}).Where("post_id = ?", post.ID).Count(&numberLikes)
+		db.Model(&models.Comment{}).Where("post_id = ?", post.ID).Count(&numberComments)
+		dto := *post.ConvertPostToResponseDTO(numberLikes, numberComments)
 		dtos = append(dtos, &dto)
 	}
 

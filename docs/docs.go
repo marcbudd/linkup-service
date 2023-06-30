@@ -1127,7 +1127,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.UserGetResponseDTO"
+                            "$ref": "#/definitions/models.UserDetailGetResponseDTO"
                         }
                     },
                     "400": {
@@ -1302,6 +1302,12 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "numberOfComments": {
+                    "type": "integer"
+                },
+                "numberOfLikes": {
+                    "type": "integer"
+                },
                 "user": {
                     "$ref": "#/definitions/models.UserGetResponseDTO"
                 }
@@ -1310,11 +1316,52 @@ const docTemplate = `{
         "models.UserCreateRequestDTO": {
             "type": "object",
             "properties": {
+                "bio": {
+                    "type": "string"
+                },
+                "birthDate": {
+                    "type": "string"
+                },
                 "email": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 },
                 "password": {
                     "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UserDetailGetResponseDTO": {
+            "type": "object",
+            "properties": {
+                "bio": {
+                    "type": "string"
+                },
+                "birthDate": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "numberFollowers": {
+                    "type": "integer"
+                },
+                "numberFollowing": {
+                    "type": "integer"
                 },
                 "username": {
                     "type": "string"
@@ -1338,6 +1385,12 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "numberFollowers": {
+                    "type": "integer"
+                },
+                "numberFollowing": {
+                    "type": "integer"
                 },
                 "username": {
                     "type": "string"

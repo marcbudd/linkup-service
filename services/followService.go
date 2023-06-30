@@ -76,6 +76,9 @@ func GetFollowingsByUserID(userID string) ([]*models.FollowGetResponseDTO, *link
 	// Create response object
 	var dtos []*models.FollowGetResponseDTO
 	for _, follow := range follows {
+		db.Preload("UserFollwing").First(&follow)
+		db.Preload("UserFollwoed").First(&follow)
+
 		dto := *follow.ConvertFollowingToResponseDTO()
 
 		dtos = append(dtos, &dto)
@@ -99,6 +102,8 @@ func GetFollowersByUserID(userID string) ([]*models.FollowGetResponseDTO, *linku
 	// Create response object
 	var dtos []*models.FollowGetResponseDTO
 	for _, follow := range follows {
+		db.Preload("UserFollwing").First(&follow)
+		db.Preload("UserFollwoed").First(&follow)
 		dto := *follow.ConvertFollowerToResponseDTO()
 
 		dtos = append(dtos, &dto)

@@ -10,30 +10,77 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// func mockDB() *gorm.DB {
+// 	db, _ := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
+
+// 	db.AutoMigrate(&models.Comment{})
+// 	db.AutoMigrate(&models.Follow{})
+// 	db.AutoMigrate(&models.Message{})
+// 	db.AutoMigrate(&models.Post{})
+// 	db.AutoMigrate(&models.Token{})
+// 	db.AutoMigrate(&models.User{})
+// 	return db
+// }
+
 // func TestSignup_Success(t *testing.T) {
-// 	// Setup
-// 	gin.SetMode(gin.TestMode)
-// 	router := gin.Default()
-// 	router.POST("/signup", controllers.Signup)
 
-// 	// Create a valid userCreateDTO
-// 	userCreateDTO := models.UserCreateRequestDTO{
-// 		Email:    "test@example.com",
-// 		Username: "testuser",
-// 		Password: "password",
-// 	}
+// // Define test data
+// email := "john.doe@example.com"
+// password := "strongPassword123!"
+// username := "johndoe"
+// birthDate := time.Now()
+// name := "John Doe"
+// bio := "Hello, I'm John Doe"
 
-// 	// TODO: Create mock database or mock functions
+// userCreateDTO := models.UserCreateRequestDTO{
+// 	Email:     email,
+// 	Username:  username,
+// 	Password:  password,
+// 	BirthDate: birthDate,
+// 	Name:      name,
+// 	Bio:       bio,
+// 	Image:     nil,
+// }
 
-// 	// Perform the request
-// 	w := httptest.NewRecorder()
-// 	req, _ := http.NewRequest("POST", "/signup", nil)
-// 	req.PostForm = userCreateDTO.ToValues()
-// 	router.ServeHTTP(w, req)
+// // Set up router
+// gin.SetMode(gin.TestMode)
+// router := gin.Default()
 
-// 	// Assertions
-// 	assert.Equal(t, http.StatusCreated, w.Code)
-// 	assert.Equal(t, "mocked-token", w.Header().Get("Set-Cookie"))
+// // Set mock database
+// initalizers.DB = mockDB()
+// var user models.User
+// result := initalizers.DB.Save(&user)
+// if result.Error != nil {
+// 	t.Error(result.Error)
+// }
+
+// // Perform a POST request to /api/users/signup with a sample JSON payload
+// requestBody := userCreateDTO
+// requestBodyBytes, _ := json.Marshal(requestBody)
+// request, _ := http.NewRequest("POST", "/api/users/signup", bytes.NewBuffer(requestBodyBytes))
+// request.Header.Set("Content-Type", "application/json")
+
+// // Create a response recorder to capture the output
+// responseRecorder := httptest.NewRecorder()
+
+// // Call the Signup handler function
+// router.POST("/api/users/signup", controllers.Signup)
+// router.ServeHTTP(responseRecorder, request)
+
+// // Check the response status code
+// assert.Equal(t, http.StatusCreated, responseRecorder.Code)
+
+// fmt.Println(responseRecorder.Body.String())
+
+// // Check the response body
+// var responseBody models.UserGetResponseDTO
+// err := json.Unmarshal(responseRecorder.Body.Bytes(), &responseBody)
+// assert.Nil(t, err)
+// assert.Equal(t, userCreateDTO.Username, responseBody.Username)
+// assert.Equal(t, userCreateDTO.BirthDate, responseBody.BirthDate)
+// assert.Equal(t, userCreateDTO.BirthDate, responseBody.Name)
+// assert.Equal(t, userCreateDTO.Bio, responseBody.Bio)
+// assert.Nil(t, responseBody.Image)
 // }
 
 func TestSignup_FailedToReadBody(t *testing.T) {

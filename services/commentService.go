@@ -68,6 +68,8 @@ func GetCommentsByPostID(postID string) ([]*models.CommentGetResponseDTO, *linku
 	// converto to DTO
 	var dtos []*models.CommentGetResponseDTO
 	for _, comment := range comments {
+		db.Preload("User").First(&comment)
+
 		dto := *comment.ConvertCommentToResponseDTO()
 
 		dtos = append(dtos, &dto)

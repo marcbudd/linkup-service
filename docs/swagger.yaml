@@ -102,15 +102,46 @@ definitions:
         type: string
       id:
         type: integer
+      numberOfComments:
+        type: integer
+      numberOfLikes:
+        type: integer
       user:
         $ref: '#/definitions/models.UserGetResponseDTO'
     type: object
   models.UserCreateRequestDTO:
     properties:
+      bio:
+        type: string
+      birthDate:
+        type: string
       email:
+        type: string
+      image:
+        type: string
+      name:
         type: string
       password:
         type: string
+      username:
+        type: string
+    type: object
+  models.UserDetailGetResponseDTO:
+    properties:
+      bio:
+        type: string
+      birthDate:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      name:
+        type: string
+      numberFollowers:
+        type: integer
+      numberFollowing:
+        type: integer
       username:
         type: string
     type: object
@@ -126,6 +157,10 @@ definitions:
         type: string
       name:
         type: string
+      numberFollowers:
+        type: integer
+      numberFollowing:
+        type: integer
       username:
         type: string
     type: object
@@ -734,7 +769,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.UserGetResponseDTO'
+            $ref: '#/definitions/models.UserDetailGetResponseDTO'
         "400":
           description: Bad Request
         "401":

@@ -155,7 +155,7 @@ func UpdatePassword(userID uint, req models.UserUpdatePasswortRequestDTO) *linku
 	return nil
 }
 
-func GetUserByID(id string) (*models.UserGetResponseDTO, *linkuperrors.LinkupError) {
+func GetUserByID(id string) (*models.UserDetailGetResponseDTO, *linkuperrors.LinkupError) {
 	db := initalizers.DB
 	var user models.User
 	err := db.Where("id = ?", id).First(&user).Error
@@ -163,7 +163,15 @@ func GetUserByID(id string) (*models.UserGetResponseDTO, *linkuperrors.LinkupErr
 		return nil, linkuperrors.New("user not found", http.StatusNotFound)
 	}
 
-	var responseUser = user.ConvertUserToResponseDTO()
+	// Get number of followers
+	var numberFollowers int64
+	db.Model(&models.Follow{}).Where("followed_id = ?", id).Count(&numberFollowers)
+
+	// Get number of following
+	var numberFollowing int64
+	db.Model(&models.Follow{}).Where("follower_id = ?", id).Count(&numberFollowing)
+
+	var responseUser = user.ConvertUserToDetailResponseDTO(numberFollowers, numberFollowing)
 	return responseUser, nil
 }
 

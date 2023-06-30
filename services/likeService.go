@@ -75,6 +75,7 @@ func GetLikesByPostID(postID string) ([]*models.LikeGetResponseDTO, *linkuperror
 	// Create response object
 	var dtos []*models.LikeGetResponseDTO
 	for _, like := range likes {
+		db.Preload("User").First(&like)
 		dto := *like.ConvertLikeToResponseDTO()
 		dtos = append(dtos, &dto)
 	}

@@ -56,7 +56,7 @@ func Signup(c *gin.Context) {
 
 	// Respond
 	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie("Authorization", tokenString, 3600*30*24, "", "", false, true)
+	c.SetCookie("Authorization", tokenString, 3600, "", "", false, true)
 	c.JSON(http.StatusCreated, user)
 
 }
@@ -104,7 +104,7 @@ func Login(c *gin.Context) {
 
 	// Respond
 	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie("Authorization", tokenString, 3600*30*24, "", "", false, true)
+	c.SetCookie("Authorization", tokenString, 3600, "", "", false, true)
 	c.JSON(http.StatusOK, gin.H{})
 
 }
@@ -223,7 +223,7 @@ func UpdatePassword(c *gin.Context) {
 // @Tags Users
 // @Produce json
 // @Param userID path int true "User ID"
-// @Success 200 {object} models.UserGetResponseDTO
+// @Success 200 {object} models.UserDetailGetResponseDTO
 // @Failure 400
 // @Failure 401
 // @Failure 404

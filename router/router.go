@@ -59,6 +59,7 @@ func SetupRouter() *gin.Engine {
 	api.GET("/posts/user/:userID", controllers.GetPostsByUserID)
 	api.GET("/posts/feed", middleware.RequireAuth, controllers.GetPostsForCurrentUser)
 	api.GET("/posts", controllers.GetPosts)
+	api.GET("/posts/gpt", controllers.CreatePostGPT)
 
 	// Like Routes
 	api.POST("/likes/:postID", middleware.RequireAuth, controllers.CreateLike)

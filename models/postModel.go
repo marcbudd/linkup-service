@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"time"
 
 	"gorm.io/gorm"
@@ -28,23 +27,23 @@ func ConvertRequestDTOToPost(req PostCreateRequestDTO, userID uint) *Post {
 }
 
 type PostGetResponseDTO struct {
-	ID        uint                `json:"id"`
-	CreatedAt time.Time           `json:"createdAt"`
-	User      *UserGetResponseDTO `json:"user"`
-	Content   string              `json:"content"`
+	ID             uint                `json:"id"`
+	CreatedAt      time.Time           `json:"createdAt"`
+	User           *UserGetResponseDTO `json:"user"`
+	Content        string              `json:"content"`
+	NumberLikes    int64               `json:"numberOfLikes"`
+	NumberComments int64               `json:"numberOfComments"`
 }
 
 // function to convert post to response dto
 // can be called everywhere, changes can be made in one place
-func (p *Post) ConvertPostToResponseDTO() *PostGetResponseDTO {
-	// fmt.Println(p.User.ConvertUserToResponseDTO().ID)
-	// fmt.Println(&p.User.ConvertUserToResponseDTO().ID)
-	fmt.Println(p.UserID)
-
+func (p *Post) ConvertPostToResponseDTO(numberLikes int64, numberComments int64) *PostGetResponseDTO {
 	return &PostGetResponseDTO{
-		ID:        p.ID,
-		CreatedAt: p.CreatedAt,
-		User:      p.User.ConvertUserToResponseDTO(),
-		Content:   p.Content,
+		ID:             p.ID,
+		CreatedAt:      p.CreatedAt,
+		User:           p.User.ConvertUserToResponseDTO(),
+		Content:        p.Content,
+		NumberLikes:    numberLikes,
+		NumberComments: numberComments,
 	}
 }
