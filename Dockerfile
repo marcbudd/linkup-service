@@ -13,6 +13,9 @@ RUN go install -mod=mod github.com/swaggo/swag/cmd/swag
 COPY . .
 RUN swag init
 
+# Install npm
+RUN apt-get install -y npm
+
 # Install Swagger UI dependencies
 RUN npm install swagger-ui-dist
 
