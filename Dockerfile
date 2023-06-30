@@ -9,7 +9,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get install -y nodejs
 
 # Generate Swagger docs
-RUN go get -u github.com/swaggo/swag/cmd/swag
+RUN go install -mod=mod github.com/swaggo/swag/cmd/swag
 COPY . .
 RUN swag init
 
