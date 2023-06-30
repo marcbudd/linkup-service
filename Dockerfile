@@ -13,7 +13,7 @@ COPY . .
 RUN swag init
 
 # Install Swagger UI dependencies
-RUN npm install swagger-ui-dist
+RUN yarn install swagger-ui-dist
 
 # Build the Go application
 RUN go mod tidy
