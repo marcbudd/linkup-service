@@ -14,7 +14,6 @@ import (
 // @Tags Comments
 // @Accept json
 // @Produce json
-// @Security ApiKeyAuth
 // @Param commentCreateRequestDTO body models.CommentCreateRequestDTO true "Comment creation data"
 // @Success 201 {object} models.CommentGetResponseDTO
 // @Failure 400
@@ -60,7 +59,6 @@ func CreateComment(c *gin.Context) {
 // @Summary Delete a comment
 // @Description Deletes a comment with the specified commentID
 // @Tags Comments
-// @Security ApiKeyAuth
 // @Param commentID path string true "Comment ID"
 // @Success 200
 // @Failure 400
@@ -104,7 +102,6 @@ func DeleteComment(c *gin.Context) {
 // @Summary Get comments by post ID
 // @Description Retrieves comments associated with the specified postID
 // @Tags Comments
-// @Security ApiKeyAuth
 // @Param postID path string true "Post ID"
 // @Success 200
 // @Failure 400

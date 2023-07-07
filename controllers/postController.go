@@ -13,7 +13,6 @@ import (
 // @Summary Create a post
 // @Description Creates a new post
 // @Tags Posts
-// @Security ApiKeyAuth
 // @Accept json
 // @Produce json
 // @Param postCreateRequestDTO body models.PostCreateRequestDTO true "Post data"
@@ -60,7 +59,6 @@ func CreatePost(c *gin.Context) {
 // @Summary Delete a post
 // @Description Deletes a post
 // @Tags Posts
-// @Security ApiKeyAuth
 // @Param postID path string true "Post ID"
 // @Success 200
 // @Failure 400
@@ -103,7 +101,6 @@ func DeletePost(c *gin.Context) {
 // @Summary Get a post by ID
 // @Description Retrieves a specific post by its ID
 // @Tags Posts
-// @Security ApiKeyAuth
 // @Produce json
 // @Param postID path string true "Post ID"
 // @Success 200 {object} models.PostGetResponseDTO

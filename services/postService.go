@@ -50,6 +50,10 @@ func DeletePost(userID uint, postID string) *linkuperrors.LinkupError {
 		return linkuperrors.New(errors.New("user is not owner of post").Error(), http.StatusForbidden)
 	}
 
+	// Delete likes and comments
+	db.Where("post_id = ?", post.ID).Delete(&models.Like{})
+	db.Where("post_id = ?", post.ID).Delete(&models.Comment{})
+
 	// Delete post
 	result = db.Delete(&post)
 	if result.Error != nil {

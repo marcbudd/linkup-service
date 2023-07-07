@@ -18,11 +18,6 @@ const docTemplate = `{
     "paths": {
         "/api/comments/posts/{postID}": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "Retrieves comments associated with the specified postID",
                 "tags": [
                     "Comments"
@@ -52,11 +47,6 @@ const docTemplate = `{
         },
         "/api/comments/{commentID}": {
             "delete": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "Deletes a comment with the specified commentID",
                 "tags": [
                     "Comments"
@@ -92,11 +82,6 @@ const docTemplate = `{
         },
         "/api/comments/{postID}": {
             "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "Create a new comment",
                 "consumes": [
                     "application/json"
@@ -140,11 +125,6 @@ const docTemplate = `{
         },
         "/api/follows/{followedUserID}": {
             "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "Creates a follow relationship between the logged-in user and the user with the specified followedUserID",
                 "tags": [
                     "Follows"
@@ -175,11 +155,6 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "Deletes the follow relationship between the logged-in user and the user with the specified followedUserID",
                 "tags": [
                     "Follows"
@@ -212,11 +187,6 @@ const docTemplate = `{
         },
         "/api/follows/{userID}": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "Retrieves the list of followers for the user with the specified userID",
                 "produces": [
                     "application/json"
@@ -249,11 +219,6 @@ const docTemplate = `{
         },
         "/api/follows/{userID}/followings": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "Retrieves the list of followings for the user with the specified userID",
                 "produces": [
                     "application/json"
@@ -319,11 +284,6 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "Creates a like for the post with the specified postID",
                 "tags": [
                     "Likes"
@@ -354,11 +314,6 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "Deletes the like for the post with the specified postID",
                 "tags": [
                     "Likes"
@@ -391,11 +346,6 @@ const docTemplate = `{
         },
         "/api/messages": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "Retrieves chats associated with the logged-in user",
                 "produces": [
                     "application/json"
@@ -423,11 +373,6 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "Creates a new message sent by the logged-in user",
                 "consumes": [
                     "application/json"
@@ -468,11 +413,6 @@ const docTemplate = `{
         },
         "/api/messages/{chatPartnerID}": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "Retrieves messages between the logged-in user and a chat partner",
                 "produces": [
                     "application/json"
@@ -555,11 +495,6 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "Creates a new post",
                 "consumes": [
                     "application/json"
@@ -654,6 +589,32 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/posts/gpt": {
+            "get": {
+                "description": "Create a post generated by OPENAI ChatGPT",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Create post using ChatGPT",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/api/posts/user/{userID}": {
             "get": {
                 "description": "Retrieves all posts of a specific user",
@@ -708,11 +669,6 @@ const docTemplate = `{
         },
         "/api/posts/{postID}": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "Retrieves a specific post by its ID",
                 "produces": [
                     "application/json"
@@ -746,11 +702,6 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "Deletes a post",
                 "tags": [
                     "Posts"
@@ -832,12 +783,28 @@ const docTemplate = `{
                     }
                 }
             },
-            "patch": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
+            "delete": {
+                "description": "Delete the logged-in user",
+                "tags": [
+                    "Users"
                 ],
+                "summary": "Delete user",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            },
+            "patch": {
                 "description": "Update the user's information",
                 "consumes": [
                     "application/json"
@@ -885,11 +852,6 @@ const docTemplate = `{
         },
         "/api/users/confirm/{token}": {
             "patch": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "Confirm the user's email address using the provided token",
                 "consumes": [
                     "application/json"
@@ -1039,11 +1001,6 @@ const docTemplate = `{
         },
         "/api/users/updatePassword": {
             "patch": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "Update the password of the logged-in user",
                 "consumes": [
                     "application/json"
@@ -1385,12 +1342,6 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
-                },
-                "numberFollowers": {
-                    "type": "integer"
-                },
-                "numberFollowing": {
-                    "type": "integer"
                 },
                 "username": {
                     "type": "string"

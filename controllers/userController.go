@@ -138,7 +138,6 @@ func Validate(c *gin.Context) {
 // @Summary Confirm Email
 // @Description Confirm the user's email address using the provided token
 // @Tags Users
-// @Security ApiKeyAuth
 // @Accept json
 // @Produce json
 // @Param token path string true "Confirmation token"
@@ -172,7 +171,6 @@ func ConfirmEmail(c *gin.Context) {
 // @Summary Update Password
 // @Description Update the password of the logged-in user
 // @Tags Users
-// @Security ApiKeyAuth
 // @Accept json
 // @Param password body models.UserUpdatePasswortRequestDTO true "New password"
 // @Success 200
@@ -294,7 +292,6 @@ func GetUsers(c *gin.Context) {
 // @Description Update the user's information
 // @Tags Users
 // @Accept json
-// @Security ApiKeyAuth
 // @Param userID path int true "User ID"
 // @Param userUpdate body models.UserUpdateRequestDTO true "User update data"
 // @Success 200
@@ -369,4 +366,37 @@ func UpdatePasswordForgotten(c *gin.Context) {
 	// Respond
 	c.JSON(http.StatusOK, gin.H{})
 
+}
+
+// DeleteUser deletes the logged-in user
+// @Summary Delete user
+// @Description Delete the logged-in user
+// @Tags Users
+// @Success 200
+// @Failure 400
+// @Failure 401
+// @Failure 404
+// @Router /api/users [delete]
+func DeleteUser(c *gin.Context) {
+	// Get user id of logged in user
+	userID, exists := c.Get("userID")
+
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Not authorized",
+		})
+		return
+	}
+
+	// Delete user
+	err := services.DeleteUser(userID.(uint))
+	if err != nil {
+		c.JSON(err.HTTPStatusCode(), gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	// Respond
+	c.JSON(http.StatusOK, gin.H{})
 }

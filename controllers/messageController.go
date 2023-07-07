@@ -12,7 +12,6 @@ import (
 // @Summary Create a new message
 // @Description Creates a new message sent by the logged-in user
 // @Tags Messages
-// @Security ApiKeyAuth
 // @Accept json
 // @Produce json
 // @Param messageCreateRequestDTO body models.MessageCreateRequestDTO true "Message data"
@@ -59,7 +58,6 @@ func CreateMessage(c *gin.Context) {
 // @Summary Get messages by chat
 // @Description Retrieves messages between the logged-in user and a chat partner
 // @Tags Messages
-// @Security ApiKeyAuth
 // @Param chatPartnerID path string true "ID of the chat partner"
 // @Produce json
 // @Success 200 {array} models.MessagesOfChatGetResponseDTO
@@ -103,7 +101,6 @@ func GetMessagesByChat(c *gin.Context) {
 // @Summary Get chats by user ID
 // @Description Retrieves chats associated with the logged-in user
 // @Tags Messages
-// @Security ApiKeyAuth
 // @Produce json
 // @Success 200 {array} models.ChatOfUserGetResponseDTO
 // @Failure 401

@@ -11,7 +11,6 @@ import (
 // @Summary Create a like for a post
 // @Description Creates a like for the post with the specified postID
 // @Tags Likes
-// @Security ApiKeyAuth
 // @Param postID path string true "Post ID"
 // @Success 201
 // @Failure 400
@@ -55,7 +54,6 @@ func CreateLike(c *gin.Context) {
 // @Summary Delete a like for a post
 // @Description Deletes the like for the post with the specified postID
 // @Tags Likes
-// @Security ApiKeyAuth
 // @Param postID path string true "Post ID"
 // @Success 200
 // @Failure 400

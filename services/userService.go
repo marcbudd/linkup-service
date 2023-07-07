@@ -256,3 +256,45 @@ func UpdatePasswordForgotten(req models.UserUpdatePasswordForgottenRequestDTO) *
 	return nil
 
 }
+
+func DeleteUser(userID uint) *linkuperrors.LinkupError {
+	db := initalizers.DB
+	var user models.User
+	err := db.Where("id = ?", userID).First(&user).Error
+	if err != nil {
+		return linkuperrors.New("user not found", http.StatusNotFound)
+	}
+
+	// Delete all comments from user
+	db.Where("user_id = ?", userID).Delete(&models.Comment{})
+
+	// Delete all chats from user
+	db.Where("sender_id = ? OR receiver_id = ?", userID, userID).Delete(&models.Message{})
+
+	// Delete all followers from user
+	db.Where("followed_id = ? OR follower_id = ?", userID, userID).Delete(&models.Follow{})
+
+	// Delete all tokens from user
+	db.Where("user_id = ?", userID).Delete(&models.Token{})
+
+	// Delete all likes from user
+	db.Where("user_id = ?", userID).Delete(&models.Like{})
+
+	// Get all posts by user
+	var posts []models.Post
+	db.Where("user_id = ?", userID).Find(&posts)
+
+	// Delete all comments and likes from posts
+	for _, post := range posts {
+		db.Where("post_id = ?", post.ID).Delete(&models.Comment{})
+		db.Where("post_id = ?", post.ID).Delete(&models.Like{})
+	}
+
+	// Delete all posts
+	db.Where("user_id = ?", userID).Delete(&models.Post{})
+
+	// Delete user
+	db.Delete(&user)
+
+	return nil
+}
