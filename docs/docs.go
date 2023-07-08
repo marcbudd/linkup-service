@@ -885,6 +885,35 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/users/current": {
+            "get": {
+                "description": "Get the logged-in user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get Current User",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserDetailGetResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
         "/api/users/forgotPassword": {
             "patch": {
                 "description": "Reset the forgotten password",

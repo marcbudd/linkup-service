@@ -797,6 +797,25 @@ paths:
       summary: Confirm Email
       tags:
       - Users
+  /api/users/current:
+    get:
+      description: Get the logged-in user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserDetailGetResponseDTO'
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not Found
+      summary: Get Current User
+      tags:
+      - Users
   /api/users/forgotPassword:
     patch:
       consumes:
