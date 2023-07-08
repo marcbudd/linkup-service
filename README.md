@@ -30,6 +30,9 @@ EMAIL_ADDRESS=
 EMAIL_PASSWORD=
 
 PROXY_HOST=
+
+OPENAI_API_KEY=
+OPENAI_API_URL=
 ```
 
 Stelle sicher, dass du eine PostgreSQL-Datenbank und einen Email-Server mit den entsprechenden Credentials eingerichtet hast und die Werte in der `.env`-Datei aktualisierst, um eine erfolgreiche Verbindung herzustellen.

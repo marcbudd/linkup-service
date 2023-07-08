@@ -248,6 +248,41 @@ func GetUserByID(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
+// GetCurrentUser returns the logged-in user
+// @Summary Get Current User
+// @Description Get the logged-in user
+// @Tags Users
+// @Produce json
+// @Success 200 {object} models.UserDetailGetResponseDTO
+// @Failure 400
+// @Failure 401
+// @Failure 404
+// @Router /api/users/current [get]
+func GetCurrentUser(c *gin.Context) {
+
+	// Get user id of logged in user
+	userID, exists := c.Get("userID")
+
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Not authorized",
+		})
+		return
+	}
+
+	// Get user
+	user, err := services.GetUserByID(strconv.Itoa(int(userID.(uint))))
+	if err != nil {
+		c.JSON(err.HTTPStatusCode(), gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	// Respond
+	c.JSON(http.StatusOK, user)
+}
+
 // GetUsers returns a list of users based on query parameters
 // @Summary Get Users
 // @Description Get a list of users based on query parameters
