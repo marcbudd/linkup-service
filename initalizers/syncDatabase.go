@@ -8,5 +8,6 @@ func SyncDatabase() {
 	DB.AutoMigrate(&models.Message{})
 	DB.AutoMigrate(&models.Post{})
 	DB.AutoMigrate(&models.Token{})
+	DB.AutoMigrate(&models.Like{})
 	DB.AutoMigrate(&models.User{})
 }
