@@ -31,6 +31,8 @@ func CreatePost(userID uint, req models.PostCreateRequestDTO) (*models.PostGetRe
 	db.Model(&models.Like{}).Where("post_id = ?", post.ID).Count(&numberLikes)
 	db.Model(&models.Comment{}).Where("post_id = ?", post.ID).Count(&numberComments)
 
+	db.Preload("User").First(&post)
+
 	return post.ConvertPostToResponseDTO(numberLikes, numberComments), nil
 
 }
