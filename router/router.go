@@ -21,7 +21,7 @@ func SetupRouter() *gin.Engine {
 
 	// Set CORS
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:5137/", "https://link-up-rho.vercel.app/"}
+	config.AllowOrigins = []string{"http://localhost:5173", "https://link-up-rho.vercel.app"}
 	config.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE"}
 	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type"}
 	config.AllowCredentials = true
