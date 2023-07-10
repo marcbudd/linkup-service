@@ -56,7 +56,7 @@ func Signup(c *gin.Context) {
 
 	// Respond
 	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie("Authorization", tokenString, 3600, "", "", false, true)
+	c.SetCookie("Authorization", tokenString, 3600, "/", "", true, true)
 	c.JSON(http.StatusCreated, user)
 
 }
@@ -104,7 +104,7 @@ func Login(c *gin.Context) {
 
 	// Respond
 	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie("Authorization", tokenString, 3600, "", "", false, true)
+	c.SetCookie("Authorization", tokenString, 3600, "/", "", true, true)
 	c.JSON(http.StatusOK, gin.H{})
 
 }
@@ -235,8 +235,18 @@ func GetUserByID(c *gin.Context) {
 		return
 	}
 
+	// Get user id of logged in user
+	currentUserID, exists := c.Get("userID")
+
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Not authorized",
+		})
+		return
+	}
+
 	// Get user
-	user, err := services.GetUserByID(userID)
+	user, err := services.GetUserByID(userID, currentUserID.(uint))
 	if err != nil {
 		c.JSON(err.HTTPStatusCode(), gin.H{
 			"error": err.Error(),
@@ -271,7 +281,7 @@ func GetCurrentUser(c *gin.Context) {
 	}
 
 	// Get user
-	user, err := services.GetUserByID(strconv.Itoa(int(userID.(uint))))
+	user, err := services.GetUserByID(strconv.Itoa(int(userID.(uint))), userID.(uint))
 	if err != nil {
 		c.JSON(err.HTTPStatusCode(), gin.H{
 			"error": err.Error(),

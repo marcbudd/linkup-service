@@ -93,27 +93,29 @@ func (u *User) ConvertUserToResponseDTO() *UserGetResponseDTO {
 }
 
 type UserDetailGetResponseDTO struct {
-	ID              uint      `json:"id"`
-	Username        string    `json:"username"`
-	BirthDate       time.Time `json:"birthDate"`
-	Name            string    `json:"name"`
-	Bio             string    `json:"bio"`
-	Image           *string   `json:"image"`
-	NumberFollowers int64     `json:"numberFollowers"`
-	NumberFollowing int64     `json:"numberFollowing"`
+	ID                    uint      `json:"id"`
+	Username              string    `json:"username"`
+	BirthDate             time.Time `json:"birthDate"`
+	Name                  string    `json:"name"`
+	Bio                   string    `json:"bio"`
+	Image                 *string   `json:"image"`
+	NumberFollowers       int64     `json:"numberFollowers"`
+	NumberFollowing       int64     `json:"numberFollowing"`
+	FollowedByCurrentUser bool      `json:"followedByCurrentUser"`
 }
 
 // function to convert user to response dto
 // can be called everywhere, changes can be made in one place
-func (u *User) ConvertUserToDetailResponseDTO(numberFollowers int64, numerFollowing int64) *UserDetailGetResponseDTO {
+func (u *User) ConvertUserToDetailResponseDTO(numberFollowers int64, numerFollowing int64, followedByCurrentUser bool) *UserDetailGetResponseDTO {
 	return &UserDetailGetResponseDTO{
-		ID:              u.ID,
-		Username:        u.Username,
-		BirthDate:       u.BirthDate,
-		Name:            u.Name,
-		Bio:             u.Bio,
-		Image:           u.Image,
-		NumberFollowers: numberFollowers,
-		NumberFollowing: numerFollowing,
+		ID:                    u.ID,
+		Username:              u.Username,
+		BirthDate:             u.BirthDate,
+		Name:                  u.Name,
+		Bio:                   u.Bio,
+		Image:                 u.Image,
+		NumberFollowers:       numberFollowers,
+		NumberFollowing:       numerFollowing,
+		FollowedByCurrentUser: followedByCurrentUser,
 	}
 }

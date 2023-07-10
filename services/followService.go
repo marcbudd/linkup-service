@@ -19,6 +19,11 @@ func CreateFollow(userIDFollowing uint, userIDFollowed string) *linkuperrors.Lin
 		return nil
 	}
 
+	// Check if user wants to follow himself
+	if strconv.Itoa(int(userIDFollowing)) == userIDFollowed {
+		return linkuperrors.New("user cannot follow himself", http.StatusBadRequest)
+	}
+
 	// Convert string to uint
 	temp, err := strconv.ParseUint(userIDFollowed, 10, 64)
 	if err != nil {
@@ -80,7 +85,7 @@ func GetFollowingsByUserID(userID string) ([]*models.FollowGetResponseDTO, *link
 	var dtos []*models.FollowGetResponseDTO
 	for _, follow := range follows {
 		db.Preload("UserFollwing").First(&follow)
-		db.Preload("UserFollwoed").First(&follow)
+		db.Preload("UserFollowed").First(&follow)
 
 		dto := *follow.ConvertFollowingToResponseDTO()
 
@@ -106,7 +111,7 @@ func GetFollowersByUserID(userID string) ([]*models.FollowGetResponseDTO, *linku
 	var dtos []*models.FollowGetResponseDTO
 	for _, follow := range follows {
 		db.Preload("UserFollwing").First(&follow)
-		db.Preload("UserFollwoed").First(&follow)
+		db.Preload("UserFollowed").First(&follow)
 		dto := *follow.ConvertFollowerToResponseDTO()
 
 		dtos = append(dtos, &dto)

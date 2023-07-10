@@ -155,7 +155,7 @@ func UpdatePassword(userID uint, req models.UserUpdatePasswortRequestDTO) *linku
 	return nil
 }
 
-func GetUserByID(id string) (*models.UserDetailGetResponseDTO, *linkuperrors.LinkupError) {
+func GetUserByID(id string, currentUserID uint) (*models.UserDetailGetResponseDTO, *linkuperrors.LinkupError) {
 	db := initalizers.DB
 	var user models.User
 	err := db.Where("id = ?", id).First(&user).Error
@@ -165,13 +165,21 @@ func GetUserByID(id string) (*models.UserDetailGetResponseDTO, *linkuperrors.Lin
 
 	// Get number of followers
 	var numberFollowers int64
-	db.Model(&models.Follow{}).Where("followed_id = ?", id).Count(&numberFollowers)
+	db.Model(&models.Follow{}).Where("user_followed_id = ?", id).Count(&numberFollowers)
 
 	// Get number of following
 	var numberFollowing int64
-	db.Model(&models.Follow{}).Where("follower_id = ?", id).Count(&numberFollowing)
+	db.Model(&models.Follow{}).Where("user_following_id = ?", id).Count(&numberFollowing)
 
-	var responseUser = user.ConvertUserToDetailResponseDTO(numberFollowers, numberFollowing)
+	// Is user followed by logged in user
+	isFollowing := false
+	var count int64
+	db.Model(&models.Follow{}).Where("user_followed_id = ? AND user_following_id = ?", id, currentUserID).Count(&count)
+	if count > 0 {
+		isFollowing = true
+	}
+
+	var responseUser = user.ConvertUserToDetailResponseDTO(numberFollowers, numberFollowing, isFollowing)
 	return responseUser, nil
 }
 
