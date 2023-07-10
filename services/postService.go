@@ -26,14 +26,14 @@ func CreatePost(userID uint, req models.PostCreateRequestDTO) (*models.PostGetRe
 		return nil, linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
 	}
 
-	var numberLikes int64
-	var numberComments int64
-	db.Model(&models.Like{}).Where("post_id = ?", post.ID).Count(&numberLikes)
-	db.Model(&models.Comment{}).Where("post_id = ?", post.ID).Count(&numberComments)
+	// Post was just created, no likes, messages and is not liked by user
+	numberLikes := int64(0)
+	numberComments := int64(0)
+	isLiked := false
 
 	db.Preload("User").First(&post)
 
-	return post.ConvertPostToResponseDTO(numberLikes, numberComments), nil
+	return post.ConvertPostToResponseDTO(numberLikes, numberComments, isLiked), nil
 
 }
 
@@ -65,7 +65,7 @@ func DeletePost(userID uint, postID string) *linkuperrors.LinkupError {
 	return nil
 }
 
-func GetPostsByUserID(userID string, limit int, page int) ([]*models.PostGetResponseDTO, *linkuperrors.LinkupError) {
+func GetPostsByUserID(userID string, limit int, page int, currentUserID uint) ([]*models.PostGetResponseDTO, *linkuperrors.LinkupError) {
 	// Set default values: Pagination
 	if page <= 0 {
 		page = 1
@@ -88,6 +88,7 @@ func GetPostsByUserID(userID string, limit int, page int) ([]*models.PostGetResp
 	// Sort by created at desc
 	sortByCreatedAtDesc(posts)
 
+	// Create response dtos
 	var dtos []*models.PostGetResponseDTO
 	for _, post := range posts {
 		db.Preload("User").First(&post)
@@ -95,14 +96,20 @@ func GetPostsByUserID(userID string, limit int, page int) ([]*models.PostGetResp
 		var numberComments int64
 		db.Model(&models.Like{}).Where("post_id = ?", post.ID).Count(&numberLikes)
 		db.Model(&models.Comment{}).Where("post_id = ?", post.ID).Count(&numberComments)
-		dto := *post.ConvertPostToResponseDTO(numberLikes, numberComments)
+
+		// Check if current user is liking
+		var count int64 = 0
+		db.Model(&models.Like{}).Where("user_id = ? AND post_id = ?", currentUserID, post.ID).Count(&count)
+		isLiked := count > 0
+
+		dto := *post.ConvertPostToResponseDTO(numberLikes, numberComments, isLiked)
 		dtos = append(dtos, &dto)
 	}
 
 	return dtos, nil
 }
 
-func GetPostByID(postID string) (*models.PostGetResponseDTO, *linkuperrors.LinkupError) {
+func GetPostByID(postID string, currentUserID uint) (*models.PostGetResponseDTO, *linkuperrors.LinkupError) {
 
 	// Get post by id
 	db := initalizers.DB
@@ -118,12 +125,18 @@ func GetPostByID(postID string) (*models.PostGetResponseDTO, *linkuperrors.Linku
 	var numberComments int64
 	db.Model(&models.Like{}).Where("post_id = ?", post.ID).Count(&numberLikes)
 	db.Model(&models.Comment{}).Where("post_id = ?", post.ID).Count(&numberComments)
-	responsePost := *post.ConvertPostToResponseDTO(numberLikes, numberComments)
+
+	// Check if current user is liking
+	var count int64 = 0
+	db.Model(&models.Like{}).Where("user_id = ? AND post_id = ?", currentUserID, post.ID).Count(&count)
+	isLiked := count > 0
+
+	responsePost := *post.ConvertPostToResponseDTO(numberLikes, numberComments, isLiked)
 
 	return &responsePost, nil
 }
 
-func GetPostsForCurrentUser(userID uint, limit int, page int) ([]*models.PostGetResponseDTO, *linkuperrors.LinkupError) {
+func GetPostsForCurrentUser(userID uint, limit int, page int, currentUserID uint) ([]*models.PostGetResponseDTO, *linkuperrors.LinkupError) {
 	// Set default values: Pagination
 	if page <= 0 {
 		page = 1
@@ -159,7 +172,13 @@ func GetPostsForCurrentUser(userID uint, limit int, page int) ([]*models.PostGet
 		var numberComments int64
 		db.Model(&models.Like{}).Where("post_id = ?", post.ID).Count(&numberLikes)
 		db.Model(&models.Comment{}).Where("post_id = ?", post.ID).Count(&numberComments)
-		dto := *post.ConvertPostToResponseDTO(numberLikes, numberComments)
+
+		// Check if current user is liking
+		var count int64 = 0
+		db.Model(&models.Like{}).Where("user_id = ? AND post_id = ?", currentUserID, post.ID).Count(&count)
+		isLiked := count > 0
+
+		dto := *post.ConvertPostToResponseDTO(numberLikes, numberComments, isLiked)
 		dtos = append(dtos, &dto)
 	}
 
@@ -167,7 +186,7 @@ func GetPostsForCurrentUser(userID uint, limit int, page int) ([]*models.PostGet
 
 }
 
-func GetAllPosts(limit int, page int) ([]*models.PostGetResponseDTO, *linkuperrors.LinkupError) {
+func GetAllPosts(limit int, page int, currentUserID uint) ([]*models.PostGetResponseDTO, *linkuperrors.LinkupError) {
 	// Set default values: Pagination
 	if page <= 0 {
 		page = 1
@@ -199,7 +218,13 @@ func GetAllPosts(limit int, page int) ([]*models.PostGetResponseDTO, *linkuperro
 		var numberComments int64
 		db.Model(&models.Like{}).Where("post_id = ?", post.ID).Count(&numberLikes)
 		db.Model(&models.Comment{}).Where("post_id = ?", post.ID).Count(&numberComments)
-		dto := *post.ConvertPostToResponseDTO(numberLikes, numberComments)
+
+		// Check if current user is liking
+		var count int64 = 0
+		db.Model(&models.Like{}).Where("user_id = ? AND post_id = ?", currentUserID, post.ID).Count(&count)
+		isLiked := count > 0
+
+		dto := *post.ConvertPostToResponseDTO(numberLikes, numberComments, isLiked)
 		dtos = append(dtos, &dto)
 	}
 

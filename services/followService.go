@@ -33,6 +33,9 @@ func CreateFollow(userIDFollowing uint, userIDFollowed string) *linkuperrors.Lin
 	}
 	result := db.Create(&follow)
 
+	db.Preload("UserFollowing").First(&follow)
+	db.Preload("UserFollowed").First(&follow)
+
 	if result.Error != nil {
 		return linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
 	}

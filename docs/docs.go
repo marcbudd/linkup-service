@@ -661,6 +661,9 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request"
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
                     "500": {
                         "description": "Internal Server Error"
                     }
@@ -695,6 +698,9 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -1287,6 +1293,9 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "likedByCurrentUser": {
+                    "type": "boolean"
                 },
                 "numberOfComments": {
                     "type": "integer"

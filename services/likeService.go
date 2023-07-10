@@ -33,6 +33,8 @@ func CreateLike(userID uint, postID string) *linkuperrors.LinkupError {
 	}
 	result := db.Create(&like)
 
+	db.Preload("User").First(&like)
+
 	if result.Error != nil {
 		return linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
 	}

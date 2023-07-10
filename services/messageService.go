@@ -25,6 +25,9 @@ func CreateMessage(currentUserID uint, req models.MessageCreateRequestDTO) (*mod
 		return nil, linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
 	}
 
+	db.Preload("Sender").First(&message)
+	db.Preload("Receiver").First(&message)
+
 	return message.ConvertMessageToResponseDTO(currentUserID), nil
 
 }

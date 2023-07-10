@@ -105,6 +105,7 @@ func DeletePost(c *gin.Context) {
 // @Param postID path string true "Post ID"
 // @Success 200 {object} models.PostGetResponseDTO
 // @Failure 400
+// @Failure 401
 // @Failure 500
 // @Router /api/posts/{postID} [get]
 func GetPostByID(c *gin.Context) {
@@ -116,8 +117,17 @@ func GetPostByID(c *gin.Context) {
 		return
 	}
 
+	// Get user id of logged in user
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Not authorized",
+		})
+		return
+	}
+
 	// Get post
-	post, err := services.GetPostByID(postID)
+	post, err := services.GetPostByID(postID, userID.(uint))
 	if err != nil {
 		c.JSON(err.HTTPStatusCode(), gin.H{
 			"error": err.Error(),
@@ -139,6 +149,7 @@ func GetPostByID(c *gin.Context) {
 // @Param page query int false "Page" default(0)
 // @Success 200 {array} models.PostGetResponseDTO
 // @Failure 400
+// @Failure 401
 // @Failure 500
 // @Router /api/posts/user/{userID} [get]
 func GetPostsByUserID(c *gin.Context) {
@@ -160,8 +171,17 @@ func GetPostsByUserID(c *gin.Context) {
 		return
 	}
 
+	// Get user id of logged in user
+	currentUserID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Not authorized",
+		})
+		return
+	}
+
 	// Get posts
-	posts, serviceErr := services.GetPostsByUserID(userID, int(limit), int(page))
+	posts, serviceErr := services.GetPostsByUserID(userID, int(limit), int(page), currentUserID.(uint))
 	if serviceErr != nil {
 		c.JSON(serviceErr.HTTPStatusCode(), gin.H{
 			"error": serviceErr.Error(),
@@ -207,7 +227,7 @@ func GetPostsForCurrentUser(c *gin.Context) {
 	}
 
 	// Get posts
-	posts, serviceErr := services.GetPostsForCurrentUser(userID.(uint), int(limit), int(page))
+	posts, serviceErr := services.GetPostsForCurrentUser(userID.(uint), int(limit), int(page), userID.(uint))
 	if serviceErr != nil {
 		c.JSON(serviceErr.HTTPStatusCode(), gin.H{
 			"error": serviceErr.Error(),
@@ -241,8 +261,17 @@ func GetPosts(c *gin.Context) {
 		page = 0
 	}
 
+	// Get user id of logged in user
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Not authorized",
+		})
+		return
+	}
+
 	// Get posts
-	posts, serviceErr := services.GetAllPosts(int(limit), int(page))
+	posts, serviceErr := services.GetAllPosts(int(limit), int(page), userID.(uint))
 	if serviceErr != nil {
 		c.JSON(serviceErr.HTTPStatusCode(), gin.H{
 			"error": serviceErr.Error(),

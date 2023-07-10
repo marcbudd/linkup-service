@@ -57,10 +57,10 @@ func SetupRouter() *gin.Engine {
 	// Post Routes
 	api.POST("/posts", middleware.RequireAuth, controllers.CreatePost)
 	api.DELETE("/posts/:postID", middleware.RequireAuth, controllers.DeletePost)
-	api.GET("/posts/:postID", controllers.GetPostByID)
-	api.GET("/posts/user/:userID", controllers.GetPostsByUserID)
+	api.GET("/posts/:postID", middleware.RequireAuth, controllers.GetPostByID)
+	api.GET("/posts/user/:userID", middleware.RequireAuth, controllers.GetPostsByUserID)
 	api.GET("/posts/feed", middleware.RequireAuth, controllers.GetPostsForCurrentUser)
-	api.GET("/posts", controllers.GetPosts)
+	api.GET("/posts", middleware.RequireAuth, controllers.GetPosts)
 	api.GET("/posts/gpt", controllers.CreatePostGPT)
 
 	// Like Routes
@@ -75,7 +75,7 @@ func SetupRouter() *gin.Engine {
 	api.GET("/follows/:userID/followers", controllers.GetFollowersByUserID)
 
 	// Comment Routes
-	api.POST("/comments/:postID", middleware.RequireAuth, controllers.CreateComment)
+	api.POST("/comments", middleware.RequireAuth, controllers.CreateComment)
 	api.DELETE("/comments/:commentID", middleware.RequireAuth, controllers.DeleteComment)
 	api.GET("/comments/posts/:postID", controllers.GetCommentsByPostID)
 

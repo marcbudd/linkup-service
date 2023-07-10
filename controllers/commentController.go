@@ -19,7 +19,7 @@ import (
 // @Failure 400
 // @Failure 401
 // @Failure 500
-// @Router /api/comments/{postID} [post]
+// @Router /api/comments [post]
 func CreateComment(c *gin.Context) {
 
 	//Read body

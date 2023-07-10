@@ -27,23 +27,25 @@ func ConvertRequestDTOToPost(req PostCreateRequestDTO, userID uint) *Post {
 }
 
 type PostGetResponseDTO struct {
-	ID             uint                `json:"id"`
-	CreatedAt      time.Time           `json:"createdAt"`
-	User           *UserGetResponseDTO `json:"user"`
-	Content        string              `json:"content"`
-	NumberLikes    int64               `json:"numberOfLikes"`
-	NumberComments int64               `json:"numberOfComments"`
+	ID                 uint                `json:"id"`
+	CreatedAt          time.Time           `json:"createdAt"`
+	User               *UserGetResponseDTO `json:"user"`
+	Content            string              `json:"content"`
+	NumberLikes        int64               `json:"numberOfLikes"`
+	NumberComments     int64               `json:"numberOfComments"`
+	LikedByCurrentUser bool                `json:"likedByCurrentUser"`
 }
 
 // function to convert post to response dto
 // can be called everywhere, changes can be made in one place
-func (p *Post) ConvertPostToResponseDTO(numberLikes int64, numberComments int64) *PostGetResponseDTO {
+func (p *Post) ConvertPostToResponseDTO(numberLikes int64, numberComments int64, likedByCurrentUser bool) *PostGetResponseDTO {
 	return &PostGetResponseDTO{
-		ID:             p.ID,
-		CreatedAt:      p.CreatedAt,
-		User:           p.User.ConvertUserToResponseDTO(),
-		Content:        p.Content,
-		NumberLikes:    numberLikes,
-		NumberComments: numberComments,
+		ID:                 p.ID,
+		CreatedAt:          p.CreatedAt,
+		User:               p.User.ConvertUserToResponseDTO(),
+		Content:            p.Content,
+		NumberLikes:        numberLikes,
+		NumberComments:     numberComments,
+		LikedByCurrentUser: likedByCurrentUser,
 	}
 }
