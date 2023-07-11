@@ -1,6 +1,7 @@
 package services
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
@@ -11,13 +12,22 @@ import (
 	"github.com/marcbudd/linkup-service/linkuperrors"
 )
 
+type gptAnswer struct {
+	ID      string `json:"id"`
+	Choices []struct {
+		Text string `json:"text"`
+	} `json:"choices"`
+}
+
 func CreatePostGPT() (string, *linkuperrors.LinkupError) {
 
 	url := os.Getenv("OPENAI_API_URL")
 	apiKey := os.Getenv("OPENAI_API_KEY")
 	payload := `{
-		"prompt": "Schreibe mir einen witzigen Tweet",
-		"max_tokens": 30
+		"prompt": "Generiere mir einen kurzen, lustigen Tweet mit max. 150 Zeichen.",
+		"max_tokens": 50,
+		"temperature": 0.7,
+		"n": 5
 	}`
 
 	client := &http.Client{}
@@ -32,6 +42,7 @@ func CreatePostGPT() (string, *linkuperrors.LinkupError) {
 	req.Body = ioutil.NopCloser(strings.NewReader(payload))
 
 	resp, err := client.Do(req)
+	resp.StatusCode = 400 // is used to block the api call for now because of api requests cost
 	if err != nil || resp.StatusCode != 200 {
 		// return "", linkuperrors.New("failed to create post from api", http.StatusInternalServerError)
 		return FakeCreatePostGPT(), nil
@@ -46,11 +57,22 @@ func CreatePostGPT() (string, *linkuperrors.LinkupError) {
 
 	string := string(body)
 
-	return string, nil
+	var response gptAnswer
+	err = json.Unmarshal([]byte(string), &response)
+	if err != nil {
+		return "", linkuperrors.New(err.Error(), http.StatusInternalServerError)
+	}
+
+	if len(response.Choices) > 0 {
+		text := response.Choices[0].Text
+		return text, nil
+	}
+
+	return "", linkuperrors.New(err.Error(), http.StatusInternalServerError)
 
 }
 
-// Fake API call because free requests are used up
+// Fake API call because if free API call limit is reached
 func FakeCreatePostGPT() string {
 	posts := []string{
 		"Wenn ich ein Vogel wäre, würde ich den ganzen Tag vor Fenstern sitzen und die Menschen erschrecken. Sorry, aber manchmal muss man seine Flügel ausbreiten.",
