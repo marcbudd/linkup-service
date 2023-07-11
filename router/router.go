@@ -45,6 +45,7 @@ func SetupRouter() *gin.Engine {
 	// User Routes
 	api.POST("/users/signup", controllers.Signup)
 	api.POST("/users/login", controllers.Login)
+	api.POST("/users/logout", controllers.Logout)
 	api.GET("/users/validate", middleware.RequireAuth, controllers.Validate)
 	api.PATCH("/users/confirm/:token", controllers.ConfirmEmail)
 	api.PATCH("/users/updatePassword", middleware.RequireAuth, controllers.UpdatePassword)

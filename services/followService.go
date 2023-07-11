@@ -72,10 +72,10 @@ func DeleteFollow(userIDFollowing uint, userIDFollowed string) *linkuperrors.Lin
 // Get lists of user that are followed by a user
 func GetFollowingsByUserID(userID string) ([]*models.FollowGetResponseDTO, *linkuperrors.LinkupError) {
 
-	// Get follows of a user
+	// Get followings of a user
 	db := initalizers.DB
 	var follows []*models.Follow
-	result := db.Where("user_follwing_id = ?", userID).Find(&follows)
+	result := db.Where("user_following_id = ?", userID).Find(&follows)
 	if result.Error != nil {
 		return nil, linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
 
@@ -84,8 +84,8 @@ func GetFollowingsByUserID(userID string) ([]*models.FollowGetResponseDTO, *link
 	// Create response object
 	var dtos []*models.FollowGetResponseDTO
 	for _, follow := range follows {
-		db.Preload("UserFollwing").First(&follow)
-		db.Preload("UserFollowed").First(&follow)
+		db.Preload("User_Following").First(&follow)
+		db.Preload("User_Followed").First(&follow)
 
 		dto := *follow.ConvertFollowingToResponseDTO()
 
@@ -110,8 +110,8 @@ func GetFollowersByUserID(userID string) ([]*models.FollowGetResponseDTO, *linku
 	// Create response object
 	var dtos []*models.FollowGetResponseDTO
 	for _, follow := range follows {
-		db.Preload("UserFollwing").First(&follow)
-		db.Preload("UserFollowed").First(&follow)
+		db.Preload("User_Following").First(&follow)
+		db.Preload("User_Followed").First(&follow)
 		dto := *follow.ConvertFollowerToResponseDTO()
 
 		dtos = append(dtos, &dto)

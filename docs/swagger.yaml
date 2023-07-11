@@ -872,6 +872,15 @@ paths:
       summary: User Login
       tags:
       - Users
+  /api/users/logout:
+    post:
+      description: Logout the user
+      responses:
+        "200":
+          description: OK
+      summary: User Logout
+      tags:
+      - Users
   /api/users/signup:
     post:
       consumes:

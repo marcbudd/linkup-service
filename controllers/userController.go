@@ -109,6 +109,22 @@ func Login(c *gin.Context) {
 
 }
 
+// Logout logs out the user
+// @Summary User Logout
+// @Description Logout the user
+// @Tags Users
+// @Success 200
+// @Router /api/users/logout [post]
+func Logout(c *gin.Context) {
+
+	// Delete cookie
+	c.SetCookie("Authorization", "", -1, "/", "", true, true)
+
+	// Respond
+	c.JSON(http.StatusOK, gin.H{})
+
+}
+
 // Validate validates the user token and checks if the user is authorized
 // @Summary Validate User Token
 // @Description Validate the user token and check if the user is authorized

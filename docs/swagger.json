@@ -982,6 +982,20 @@
                 }
             }
         },
+        "/api/users/logout": {
+            "post": {
+                "description": "Logout the user",
+                "tags": [
+                    "Users"
+                ],
+                "summary": "User Logout",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/api/users/signup": {
             "post": {
                 "description": "Create a new user account",
