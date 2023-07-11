@@ -38,7 +38,7 @@ func GetMessagesByChat(currentUserID uint, chatPartnerID string) (*models.Messag
 	db := initalizers.DB
 	var messages []models.Message
 
-	result := db.Where("sender_id = ? OR sender_id = ?", currentUserID, chatPartnerID).Where("receiver_id = ? OR receiver_id = ?", currentUserID, chatPartnerID).Preload("Receiver").Preload("Sender").Find(&messages)
+	result := db.Where("sender_id = ? OR sender_id = ?", currentUserID, chatPartnerID).Where("receiver_id = ? OR receiver_id = ?", currentUserID, chatPartnerID).Find(&messages)
 
 	if result.Error != nil {
 		return nil, linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
@@ -63,7 +63,8 @@ func GetMessagesByChat(currentUserID uint, chatPartnerID string) (*models.Messag
 
 	// Set IsReadyByReceiver to true, where ReceiverID = currentUserID
 	for _, message := range messages {
-
+		db.Preload("Sender").First(&message)
+		db.Preload("Receiver").First(&message)
 		if message.ReceiverID == currentUserID {
 			message.IsReadByReceiver = true
 			db.Save(&message)
@@ -112,7 +113,7 @@ func GetChatsByUserID(currentUserID uint) ([]*models.ChatOfUserGetResponseDTO, *
 
 		// Get last message
 		var message models.Message
-		err = db.Where("sender_id = ? OR sender_id = ?", currentUserID, chatPartnerID).Where("receiver_id = ? OR receiver_id = ?", currentUserID, chatPartnerID).Order("created_at DESC").Limit(1).Preload("Receiver").Preload("Sender").Find(&message).Error
+		err = db.Where("sender_id = ? OR sender_id = ?", currentUserID, chatPartnerID).Where("receiver_id = ? OR receiver_id = ?", currentUserID, chatPartnerID).Order("created_at DESC").Limit(1).Find(&message).Error
 		if err != nil {
 			return nil, linkuperrors.New(err.Error(), http.StatusInternalServerError)
 		}
@@ -125,6 +126,8 @@ func GetChatsByUserID(currentUserID uint) ([]*models.ChatOfUserGetResponseDTO, *
 		}
 
 		// Create dto and append to output array
+		db.Preload("Receiver").Find(&message)
+		db.Preload("Sender").Find(&message)
 		dto := models.ConvertChatsToResponseDTO(&message, &user, &numberOfUnreadMessages)
 		chats = append(chats, dto)
 
