@@ -38,9 +38,6 @@ func CreateFollow(userIDFollowing uint, userIDFollowed string) *linkuperrors.Lin
 	}
 	result := db.Create(&follow)
 
-	db.Preload("UserFollowing").First(&follow)
-	db.Preload("UserFollowed").First(&follow)
-
 	if result.Error != nil {
 		return linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
 	}
@@ -84,8 +81,8 @@ func GetFollowingsByUserID(userID string) ([]*models.FollowGetResponseDTO, *link
 	// Create response object
 	var dtos []*models.FollowGetResponseDTO
 	for _, follow := range follows {
-		db.Preload("User_Following").First(&follow)
-		db.Preload("User_Followed").First(&follow)
+		db.Preload("UserFollowing").First(&follow)
+		db.Preload("UserFollowed").First(&follow)
 
 		dto := *follow.ConvertFollowingToResponseDTO()
 
@@ -110,8 +107,8 @@ func GetFollowersByUserID(userID string) ([]*models.FollowGetResponseDTO, *linku
 	// Create response object
 	var dtos []*models.FollowGetResponseDTO
 	for _, follow := range follows {
-		db.Preload("User_Following").First(&follow)
-		db.Preload("User_Followed").First(&follow)
+		db.Preload("UserFollowing").First(&follow)
+		db.Preload("UserFollowed").First(&follow)
 		dto := *follow.ConvertFollowerToResponseDTO()
 
 		dtos = append(dtos, &dto)
