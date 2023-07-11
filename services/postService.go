@@ -79,7 +79,7 @@ func GetPostsByUserID(userID string, limit int, page int, currentUserID uint) ([
 	// Get posts
 	db := initalizers.DB
 	var posts []models.Post
-	result := db.Where("user_id = ?", userID).Order("created_at DESC").Offset(offset).Limit(limit).Find(&posts)
+	result := db.Where("user_id = ?", userID).Order("created_at DESC").Offset(offset).Limit(limit).Preload("User").Find(&posts)
 
 	if result.Error != nil {
 		return nil, linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
@@ -91,7 +91,6 @@ func GetPostsByUserID(userID string, limit int, page int, currentUserID uint) ([
 	// Create response dtos
 	var dtos []*models.PostGetResponseDTO
 	for _, post := range posts {
-		db.Preload("User").First(&post)
 		var numberLikes int64
 		var numberComments int64
 		db.Model(&models.Like{}).Where("post_id = ?", post.ID).Count(&numberLikes)
@@ -114,13 +113,12 @@ func GetPostByID(postID string, currentUserID uint) (*models.PostGetResponseDTO,
 	// Get post by id
 	db := initalizers.DB
 	var post models.Post
-	result := db.Where("id = ?", postID).First(&post)
+	result := db.Where("id = ?", postID).Preload("User").First(&post)
 	if result.Error != nil {
 		return nil, linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
 	}
 
 	// Create response dto
-	db.Preload("User").First(&post)
 	var numberLikes int64
 	var numberComments int64
 	db.Model(&models.Like{}).Where("post_id = ?", post.ID).Count(&numberLikes)
@@ -157,6 +155,7 @@ func GetPostsForCurrentUser(userID uint, limit int, page int, currentUserID uint
 		Order("created_at DESC").
 		Offset(offset).
 		Limit(limit).
+		Preload("User").
 		Find(&posts)
 
 	if result.Error != nil {
@@ -168,7 +167,6 @@ func GetPostsForCurrentUser(userID uint, limit int, page int, currentUserID uint
 
 	var dtos []*models.PostGetResponseDTO
 	for _, post := range posts {
-		db.Preload("User").First(&post)
 		var numberLikes int64
 		var numberComments int64
 		db.Model(&models.Like{}).Where("post_id = ?", post.ID).Count(&numberLikes)
@@ -202,7 +200,7 @@ func GetAllPosts(limit int, page int, currentUserID uint) ([]*models.PostGetResp
 	db := initalizers.DB
 	var posts []models.Post
 
-	result := db.Order("created_at DESC").Offset(offset).Limit(limit).Find(&posts)
+	result := db.Order("created_at DESC").Offset(offset).Limit(limit).Preload("User").Find(&posts)
 
 	if result.Error != nil {
 		return nil, linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
@@ -214,7 +212,6 @@ func GetAllPosts(limit int, page int, currentUserID uint) ([]*models.PostGetResp
 	// Create response dtos
 	var dtos []*models.PostGetResponseDTO
 	for _, post := range posts {
-		db.Preload("User").First(&post)
 		var numberLikes int64
 		var numberComments int64
 		db.Model(&models.Like{}).Where("post_id = ?", post.ID).Count(&numberLikes)

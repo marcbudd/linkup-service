@@ -58,7 +58,7 @@ func GetCommentsByPostID(postID string) ([]*models.CommentGetResponseDTO, *linku
 	// Get comments
 	db := initalizers.DB
 	var comments []*models.Comment
-	result := db.Where("post_id = ?", postID).Find(&comments)
+	result := db.Where("post_id = ?", postID).Preload("User").Find(&comments)
 
 	if result.Error != nil {
 		return nil, linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
@@ -68,7 +68,6 @@ func GetCommentsByPostID(postID string) ([]*models.CommentGetResponseDTO, *linku
 	// converto to DTO
 	var dtos []*models.CommentGetResponseDTO
 	for _, comment := range comments {
-		db.Preload("User").First(&comment)
 
 		dto := *comment.ConvertCommentToResponseDTO()
 
