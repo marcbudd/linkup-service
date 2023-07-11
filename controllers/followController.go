@@ -131,7 +131,7 @@ func GetFollowingsByUserID(c *gin.Context) {
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /api/follows/{userID} [get]
+// @Router /api/follows/{userID}/followers [get]
 func GetFollowersByUserID(c *gin.Context) {
 
 	// Get user id from url

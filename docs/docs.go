@@ -185,7 +185,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/follows/{userID}": {
+        "/api/follows/{userID}/followers": {
             "get": {
                 "description": "Retrieves the list of followers for the user with the specified userID",
                 "produces": [
@@ -1342,6 +1342,9 @@ const docTemplate = `{
                 },
                 "birthDate": {
                     "type": "string"
+                },
+                "followedByCurrentUser": {
+                    "type": "boolean"
                 },
                 "id": {
                     "type": "integer"

@@ -79,7 +79,7 @@ func GetPostsByUserID(userID string, limit int, page int, currentUserID uint) ([
 	// Get posts
 	db := initalizers.DB
 	var posts []models.Post
-	result := db.Where("user_id = ?", userID).Offset(offset).Limit(limit).Find(&posts)
+	result := db.Where("user_id = ?", userID).Order("created_at DESC").Offset(offset).Limit(limit).Find(&posts)
 
 	if result.Error != nil {
 		return nil, linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
@@ -154,6 +154,7 @@ func GetPostsForCurrentUser(userID uint, limit int, page int, currentUserID uint
 	result := db.
 		Joins("JOIN follows ON follows.user_followed_id = posts.user_id").
 		Where("follows.user_following_id = ?", userID).
+		Order("created_at DESC").
 		Offset(offset).
 		Limit(limit).
 		Find(&posts)
@@ -201,7 +202,7 @@ func GetAllPosts(limit int, page int, currentUserID uint) ([]*models.PostGetResp
 	db := initalizers.DB
 	var posts []models.Post
 
-	result := db.Offset(offset).Limit(limit).Find(&posts)
+	result := db.Order("created_at DESC").Offset(offset).Limit(limit).Find(&posts)
 
 	if result.Error != nil {
 		return nil, linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)

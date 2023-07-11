@@ -134,6 +134,8 @@ definitions:
         type: string
       birthDate:
         type: string
+      followedByCurrentUser:
+        type: boolean
       id:
         type: integer
       image:
@@ -310,7 +312,7 @@ paths:
       summary: Create a follow relationship
       tags:
       - Follows
-  /api/follows/{userID}:
+  /api/follows/{userID}/followers:
     get:
       description: Retrieves the list of followers for the user with the specified
         userID
