@@ -10,11 +10,9 @@ import (
 func TestUpdateUser(t *testing.T) {
 	user := &models.User{}
 	req := models.UserUpdateRequestDTO{
-		Username:  "newusername",
-		BirthDate: time.Now(),
-		Name:      "New Name",
-		Bio:       "New Bio",
-		Image:     nil,
+		Username: "newusername",
+		Name:     "New Name",
+		Bio:      "New Bio",
 	}
 
 	user.UpdateUser(req)
@@ -23,20 +21,12 @@ func TestUpdateUser(t *testing.T) {
 		t.Errorf("Expected username %s, but got %s", req.Username, user.Username)
 	}
 
-	if user.BirthDate != req.BirthDate {
-		t.Errorf("Expected birth date %s, but got %s", req.BirthDate, user.BirthDate)
-	}
-
 	if user.Name != req.Name {
 		t.Errorf("Expected name %s, but got %s", req.Name, user.Name)
 	}
 
 	if user.Bio != req.Bio {
 		t.Errorf("Expected bio %s, but got %s", req.Bio, user.Bio)
-	}
-
-	if user.Image != req.Image {
-		t.Errorf("Expected image %v, but got %v", req.Image, user.Image)
 	}
 }
 

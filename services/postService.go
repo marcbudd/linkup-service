@@ -136,7 +136,7 @@ func GetPostByID(postID string, currentUserID uint) (*models.PostGetResponseDTO,
 	return &responsePost, nil
 }
 
-func GetPostsForCurrentUser(userID uint, limit int, page int, currentUserID uint) ([]*models.PostGetResponseDTO, *linkuperrors.LinkupError) {
+func GetPostsForCurrentUser(currentUserID uint, limit int, page int) ([]*models.PostGetResponseDTO, *linkuperrors.LinkupError) {
 	// Set default values: Pagination
 	if page <= 0 {
 		page = 1
@@ -153,7 +153,7 @@ func GetPostsForCurrentUser(userID uint, limit int, page int, currentUserID uint
 
 	result := db.
 		Joins("JOIN follows ON follows.user_followed_id = posts.user_id").
-		Where("follows.user_following_id = ?", userID).
+		Where("follows.user_following_id = ? OR posts.user_id = ?", currentUserID, currentUserID).
 		Order("created_at DESC").
 		Offset(offset).
 		Limit(limit).

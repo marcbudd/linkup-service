@@ -227,7 +227,7 @@ func GetPostsForCurrentUser(c *gin.Context) {
 	}
 
 	// Get posts
-	posts, serviceErr := services.GetPostsForCurrentUser(userID.(uint), int(limit), int(page), userID.(uint))
+	posts, serviceErr := services.GetPostsForCurrentUser(userID.(uint), int(limit), int(page))
 	if serviceErr != nil {
 		c.JSON(serviceErr.HTTPStatusCode(), gin.H{
 			"error": serviceErr.Error(),
