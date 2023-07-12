@@ -1432,12 +1432,6 @@ const docTemplate = `{
                 "bio": {
                     "type": "string"
                 },
-                "birthDate": {
-                    "type": "string"
-                },
-                "image": {
-                    "type": "string"
-                },
                 "name": {
                     "type": "string"
                 },

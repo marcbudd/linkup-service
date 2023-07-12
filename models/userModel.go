@@ -49,11 +49,9 @@ type UserUpdatePasswortRequestDTO struct {
 }
 
 type UserUpdateRequestDTO struct {
-	Username  string    `json:"username"`
-	BirthDate time.Time `json:"birthDate"`
-	Name      string    `json:"name"`
-	Bio       string    `json:"bio"`
-	Image     *string   `json:"image"`
+	Username string `json:"username"`
+	Name     string `json:"name"`
+	Bio      string `json:"bio"`
 }
 
 // function to convert user to response dto
