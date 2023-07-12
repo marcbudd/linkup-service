@@ -353,7 +353,6 @@ func GetUsers(c *gin.Context) {
 // @Description Update the user's information
 // @Tags Users
 // @Accept json
-// @Param userID path int true "User ID"
 // @Param userUpdate body models.UserUpdateRequestDTO true "User update data"
 // @Success 200
 // @Failure 400

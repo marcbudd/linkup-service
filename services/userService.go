@@ -215,7 +215,7 @@ func UpdateUser(userID uint, req models.UserUpdateRequestDTO) *linkuperrors.Link
 	// Check if username already exists
 	var count int64 = 0
 	db := initalizers.DB
-	db.Model(&models.User{}).Where("username = ?", req.Username).Count(&count)
+	db.Model(&models.User{}).Where("username = ? and user_id <> ?", req.Username, userID).Count(&count)
 	if count > 0 {
 		return linkuperrors.New("username is already taken", http.StatusConflict)
 	}

@@ -60,10 +60,8 @@ type UserUpdateRequestDTO struct {
 // can be called everywhere, changes can be made in one place
 func (u *User) UpdateUser(req UserUpdateRequestDTO) {
 	u.Username = req.Username
-	u.BirthDate = req.BirthDate
 	u.Name = req.Name
 	u.Bio = req.Bio
-	u.Image = req.Image
 }
 
 type UserUpdatePasswordForgottenRequestDTO struct {

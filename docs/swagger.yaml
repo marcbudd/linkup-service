@@ -732,11 +732,6 @@ paths:
       - application/json
       description: Update the user's information
       parameters:
-      - description: User ID
-        in: path
-        name: userID
-        required: true
-        type: integer
       - description: User update data
         in: body
         name: userUpdate
