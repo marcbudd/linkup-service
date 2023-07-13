@@ -185,7 +185,7 @@ func GetUserByID(id string, currentUserID uint) (*models.UserDetailGetResponseDT
 
 func GetUsers(query string, page int, limit int) (*[]models.UserGetResponseDTO, *linkuperrors.LinkupError) {
 	db := initalizers.DB
-	var users []models.User
+	var users []models.UserGetResponseDTO
 
 	// Set default values
 	if page <= 0 {
@@ -208,11 +208,7 @@ func GetUsers(query string, page int, limit int) (*[]models.UserGetResponseDTO, 
 		return nil, linkuperrors.New(err.Error(), http.StatusInternalServerError)
 	}
 
-	var dtos []models.UserGetResponseDTO
-	for i := 0; i < len(users); i++ {
-		dtos = append(dtos, *users[i].ConvertUserToResponseDTO())
-	}
-	return &dtos, nil
+	return &users, nil
 }
 
 func UpdateUser(userID uint, req models.UserUpdateRequestDTO) *linkuperrors.LinkupError {
