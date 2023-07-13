@@ -552,13 +552,6 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "User ID",
-                        "name": "userID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
                         "description": "Number of posts per page (default: 0 - all posts)",
                         "name": "limit",
                         "in": "query"

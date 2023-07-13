@@ -594,11 +594,6 @@ paths:
       - application/json
       description: Get all posts of the users the logged in user follows (feed)
       parameters:
-      - description: User ID
-        in: path
-        name: userID
-        required: true
-        type: integer
       - description: 'Number of posts per page (default: 0 - all posts)'
         in: query
         name: limit

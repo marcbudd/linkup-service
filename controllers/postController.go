@@ -199,7 +199,6 @@ func GetPostsByUserID(c *gin.Context) {
 // @Tags Posts
 // @Accept json
 // @Produce json
-// @Param userID path int true "User ID"
 // @Param limit query int false "Number of posts per page (default: 0 - all posts)"
 // @Param page query int false "Page number (default: 0 - first page)"
 // @Success 200 {array} models.PostGetResponseDTO
