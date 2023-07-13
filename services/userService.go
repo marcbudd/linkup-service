@@ -235,6 +235,11 @@ func GetUsers(query string, page int, limit int, currentUserID uint) (*[]models.
 
 func UpdateUser(userID uint, req models.UserUpdateRequestDTO) *linkuperrors.LinkupError {
 
+	// Check username
+	if !utils.IsValidUsername(req.Username) {
+		return linkuperrors.New("username is not valid", http.StatusBadRequest)
+	}
+
 	// Check if username already exists
 	var count int64 = 0
 	db := initalizers.DB
