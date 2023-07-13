@@ -63,8 +63,8 @@ func GetMessagesByChat(currentUserID uint, chatPartnerID string) (*models.Messag
 
 	// Set IsReadyByReceiver to true, where ReceiverID = currentUserID
 	for _, message := range messages {
-		db.Preload("Sender").First(&message)
-		db.Preload("Receiver").First(&message)
+		// db.Preload("Sender").First(&message)
+		// db.Preload("Receiver").First(&message)
 		if message.ReceiverID == currentUserID {
 			message.IsReadByReceiver = true
 			db.Save(&message)

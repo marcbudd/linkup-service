@@ -61,8 +61,7 @@ type MessagesOfChatGetResponseDTO struct { // DTO to recieve all the messages wh
 func ConvertMessagesToResponseDTO(messages []Message, currentUser User, chatPartner User) *MessagesOfChatGetResponseDTO {
 	var messageDTOs []MessageGetResponseDTO
 	for _, message := range messages {
-		message.ConvertMessageToResponseDTO(currentUser.ID)
-		messageDTOs = append(messageDTOs, *message.ConvertMessageToResponseDTO(message.SenderID))
+		messageDTOs = append(messageDTOs, *message.ConvertMessageToResponseDTO(currentUser.ID))
 	}
 
 	return &MessagesOfChatGetResponseDTO{
