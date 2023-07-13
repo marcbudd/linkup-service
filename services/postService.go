@@ -154,8 +154,8 @@ func GetPostsForCurrentUser(currentUserID uint, limit int, page int) ([]*models.
 	result := db.
 		Joins("JOIN follows ON follows.user_followed_id = posts.user_id").
 		Where("follows.user_following_id = ? OR posts.user_id = ?", currentUserID, currentUserID).
-		Distinct("posts.id").
 		Order("posts.created_at DESC").
+		Distinct("posts.id").
 		Offset(offset).
 		Limit(limit).
 		Find(&posts)
