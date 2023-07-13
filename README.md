@@ -50,6 +50,7 @@ cd linkup-service
 
 ```shell
 go mod download
+npm install swagger-ui-dist
 ```
 
 ## Ausführung
