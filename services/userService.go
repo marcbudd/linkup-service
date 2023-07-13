@@ -185,7 +185,7 @@ func GetUserByID(id string, currentUserID uint) (*models.UserDetailGetResponseDT
 
 func GetUsers(query string, page int, limit int) (*[]models.UserGetResponseDTO, *linkuperrors.LinkupError) {
 	db := initalizers.DB
-	var users []models.UserGetResponseDTO
+	var users []models.User
 
 	// Set default values
 	if page <= 0 {
@@ -202,17 +202,17 @@ func GetUsers(query string, page int, limit int) (*[]models.UserGetResponseDTO, 
 		Where("username LIKE ? OR name LIKE ?", query, query)
 
 	// Perform database query with pagination
-	var offset int
-	if page > 1 {
-		offset = (page - 1) * limit
-	} else {
-		offset = 0
-	}
+	offset := (page - 1) * limit
 	err := dbQuery.Offset(offset).Limit(limit).Find(&users).Error
 	if err != nil {
 		return nil, linkuperrors.New(err.Error(), http.StatusInternalServerError)
 	}
-	return &users, nil
+
+	var dtos []models.UserGetResponseDTO
+	for i := 0; i < len(users); i++ {
+		dtos = append(dtos, *users[i].ConvertUserToResponseDTO())
+	}
+	return &dtos, nil
 }
 
 func UpdateUser(userID uint, req models.UserUpdateRequestDTO) *linkuperrors.LinkupError {

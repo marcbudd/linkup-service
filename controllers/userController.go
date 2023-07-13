@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -333,6 +334,8 @@ func GetUsers(c *gin.Context) {
 	if err != nil {
 		page = 0
 	}
+
+	fmt.Println(query, limit, page)
 
 	// Get users
 	users, serviceErr := services.GetUsers(query, int(limit), int(page))
