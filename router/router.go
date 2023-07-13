@@ -51,7 +51,7 @@ func SetupRouter() *gin.Engine {
 	api.PATCH("/users/updatePassword", middleware.RequireAuth, controllers.UpdatePassword)
 	api.GET("/users/:userID", middleware.RequireAuth, controllers.GetUserByID)
 	api.GET("/users/current", middleware.RequireAuth, controllers.GetCurrentUser)
-	api.GET("/users", controllers.GetUsers)
+	api.GET("/users", middleware.RequireAuth, controllers.GetUsers)
 	api.PATCH("/users", middleware.RequireAuth, controllers.UpdateUser)
 	api.PATCH("/users/forgotPassword", controllers.UpdatePasswordForgotten)
 	api.DELETE("/users", middleware.RequireAuth, controllers.DeleteUser)

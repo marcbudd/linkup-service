@@ -183,9 +183,9 @@ func GetUserByID(id string, currentUserID uint) (*models.UserDetailGetResponseDT
 	return responseUser, nil
 }
 
-func GetUsers(query string, page int, limit int) (*[]models.UserGetResponseDTO, *linkuperrors.LinkupError) {
+func GetUsers(query string, page int, limit int, currentUserID uint) (*[]models.UserDetailGetResponseDTO, *linkuperrors.LinkupError) {
 	db := initalizers.DB
-	var users []models.UserGetResponseDTO
+	var users []models.User
 
 	// Set default values
 	if page <= 0 {
@@ -208,7 +208,29 @@ func GetUsers(query string, page int, limit int) (*[]models.UserGetResponseDTO, 
 		return nil, linkuperrors.New(err.Error(), http.StatusInternalServerError)
 	}
 
-	return &users, nil
+	// Convert to response dtos
+	var dtos []models.UserDetailGetResponseDTO
+	for _, user := range users {
+		// Get number of followers
+		var numberFollowers int64
+		db.Model(&models.Follow{}).Where("user_followed_id = ?", user.ID).Count(&numberFollowers)
+
+		// Get number of following
+		var numberFollowing int64
+		db.Model(&models.Follow{}).Where("user_following_id = ?", user.ID).Count(&numberFollowing)
+
+		// Is user followed by logged in user
+		isFollowing := false
+		var count int64
+		db.Model(&models.Follow{}).Where("user_followed_id = ? AND user_following_id = ?", user.ID, currentUserID).Count(&count)
+		if count > 0 {
+			isFollowing = true
+		}
+
+		dtos = append(dtos, *user.ConvertUserToDetailResponseDTO(numberFollowers, numberFollowing, isFollowing))
+	}
+
+	return &dtos, nil
 }
 
 func UpdateUser(userID uint, req models.UserUpdateRequestDTO) *linkuperrors.LinkupError {

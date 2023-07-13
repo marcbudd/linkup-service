@@ -761,9 +761,12 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.UserGetResponseDTO"
+                                "$ref": "#/definitions/models.UserDetailGetResponseDTO"
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "500": {
                         "description": "Internal Server Error"

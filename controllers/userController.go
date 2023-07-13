@@ -318,7 +318,8 @@ func GetCurrentUser(c *gin.Context) {
 // @Param query query string false "Search query"
 // @Param limit query int false "Limit the number of results per page"
 // @Param page query int false "Page number"
-// @Success 200 {array} models.UserGetResponseDTO
+// @Success 200 {array} models.UserDetailGetResponseDTO
+// @Failure 401
 // @Failure 500
 // @Router /api/users [get]
 func GetUsers(c *gin.Context) {
@@ -334,8 +335,16 @@ func GetUsers(c *gin.Context) {
 		page = 0
 	}
 
+	// Get user id of logged in user
+	currentUserID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Not authorized",
+		})
+	}
+
 	// Get users
-	users, serviceErr := services.GetUsers(query, int(page), int(limit))
+	users, serviceErr := services.GetUsers(query, int(page), int(limit), currentUserID.(uint))
 	if serviceErr != nil {
 		c.JSON(serviceErr.HTTPStatusCode(), gin.H{
 			"error": err.Error(),
