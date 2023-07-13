@@ -151,21 +151,40 @@ func GetPostsForCurrentUser(currentUserID uint, limit int, page int) ([]*models.
 	db := initalizers.DB
 	var posts []models.Post
 
+	var followedPosts []models.Post
+	var ownPosts []models.Post
+
+	// Posts current user is following
 	result := db.
 		Joins("JOIN follows ON follows.user_followed_id = posts.user_id").
-		Where("follows.user_following_id = ? OR posts.user_id = ?", currentUserID, currentUserID).
-		Distinct("posts.id").
-		Order("posts.created_at DESC").
-		Limit(limit).
-		Offset(offset).
-		Find(&posts)
-
+		Where("follows.user_following_id = ?", currentUserID).
+		Find(&followedPosts)
 	if result.Error != nil {
 		return nil, linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
 	}
 
-	// Sort by created at desc
-	sortByCreatedAtDesc(posts)
+	// Posts of current user
+	result = db.
+		Where("user_id = ?", currentUserID).
+		Find(&ownPosts)
+	if result.Error != nil {
+		return nil, linkuperrors.New(result.Error.Error(), http.StatusInternalServerError)
+	}
+
+	// Combine posts
+	combinedPosts := append(followedPosts, ownPosts...)
+	sortByCreatedAtDesc(combinedPosts)
+
+	// Anwenden von Offset und Limit
+	start := offset
+	end := offset + limit
+	if start > len(combinedPosts) {
+		start = len(combinedPosts)
+	}
+	if end > len(combinedPosts) {
+		end = len(combinedPosts)
+	}
+	posts = combinedPosts[start:end]
 
 	var dtos []*models.PostGetResponseDTO
 	for _, post := range posts {
