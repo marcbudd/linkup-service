@@ -202,7 +202,12 @@ func GetUsers(query string, page int, limit int) (*[]models.UserGetResponseDTO, 
 		Where("username LIKE ? OR name LIKE ?", query, query)
 
 	// Perform database query with pagination
-	offset := (page - 1) * limit
+	var offset int
+	if page > 1 {
+		offset = (page - 1) * limit
+	} else {
+		offset = 0
+	}
 	err := dbQuery.Offset(offset).Limit(limit).Find(&users).Error
 	if err != nil {
 		return nil, linkuperrors.New(err.Error(), http.StatusInternalServerError)
