@@ -1079,11 +1079,6 @@ const docTemplate = `{
         },
         "/api/users/validate": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "Validate the user token and check if the user is authorized",
                 "tags": [
                     "Users"

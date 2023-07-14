@@ -929,8 +929,6 @@ paths:
           description: OK
         "401":
           description: Unauthorized
-      security:
-      - ApiKeyAuth: []
       summary: Validate User Token
       tags:
       - Users

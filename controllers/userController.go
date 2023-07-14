@@ -129,13 +129,12 @@ func Logout(c *gin.Context) {
 // @Summary Validate User Token
 // @Description Validate the user token and check if the user is authorized
 // @Tags Users
-// @Security ApiKeyAuth
 // @Success 200
 // @Failure 401
 // @Router /api/users/validate [get]
 func Validate(c *gin.Context) {
 	// Get user id of logged in user
-	_, exists := c.Get("userID")
+	userID, exists := c.Get("userID")
 
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{
@@ -146,7 +145,7 @@ func Validate(c *gin.Context) {
 
 	// Respond
 	c.JSON(http.StatusOK, gin.H{
-		"message": "validated",
+		"id": userID,
 	})
 }
 
