@@ -149,7 +149,7 @@ func Validate(c *gin.Context) {
 	})
 }
 
-// ConfirmEmail godoc
+// Confirm email confirms the email of a user
 // @Summary Confirm Email
 // @Description Confirm the user's email address using the provided token
 // @Tags Users
